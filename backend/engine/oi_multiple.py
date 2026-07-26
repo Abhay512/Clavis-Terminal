@@ -126,7 +126,7 @@ class OIMultipleBoard:
                 chain.setdefault(s.inst.strike, {})[s.inst.kind] = s
             self._chains[ul] = chain
             strikes = sorted(chain)
-            diffs = [b - a for a, b in zip(strikes, strikes[1:]) if b > a]
+            diffs = [b - a for a, b in zip(strikes, strikes[1:], strict=False) if b > a]
             self._step[ul] = statistics.median(diffs) if diffs else 0.0
         self._stocks: dict[str, _Stock] = {}
 

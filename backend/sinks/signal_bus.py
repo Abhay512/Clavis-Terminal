@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Callable
+from collections.abc import Callable
 
 import config
 from engine.big_player_radar import BigPlayerSignal
@@ -173,8 +173,8 @@ def print_oneway(movers: list[OneWayMover]) -> None:
     if not movers:
         return
     ts = movers[0].ts
-    ups = [m for m in movers if m.direction == "BUY"]
-    dns = [m for m in movers if m.direction == "SELL"]
+    [m for m in movers if m.direction == "BUY"]
+    [m for m in movers if m.direction == "SELL"]
     print(f"\n>>>>> ONE-WAY MOVERS {ts:%H:%M} "
           f"(clean institutional one-directional) <<<<<")
     print(f"{'St':<7}{'Side':<5}{'Stock':<12}{'Score':>6}{'Entry':>16}"

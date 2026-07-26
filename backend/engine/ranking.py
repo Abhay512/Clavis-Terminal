@@ -38,7 +38,7 @@ class StockRank:
     top_pe_buy_strike: str       # strongest put-buying strike  (SELL ideas)
 
 
-def flows_4way(r: "StockRank") -> tuple[float, float]:
+def flows_4way(r: StockRank) -> tuple[float, float]:
     """Combined bullish / bearish rupee flow across all four OI angles."""
     bull = r.ce_buy_cr + r.pe_write_cr + r.ce_cover_cr + r.pe_unwind_cr
     bear = r.pe_buy_cr + r.ce_write_cr + r.pe_cover_cr + r.ce_unwind_cr

@@ -96,7 +96,7 @@ def oneway_ratio(fut: InstrumentState, direction: str,
                  lookback: int | None = None) -> float:
     bars = list(fut.bars)[-((lookback or config.MOM_ONEWAY_BARS) + 1):]
     ups = downs = 0
-    for prev, cur in zip(bars, bars[1:]):
+    for prev, cur in zip(bars, bars[1:], strict=False):
         if cur.close > prev.close:
             ups += 1
         elif cur.close < prev.close:

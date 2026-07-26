@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import logging
 from datetime import date, datetime
@@ -15,9 +16,9 @@ from engine.big_player_radar import BigPlayerSignal
 from engine.oi_multiple import OIMultipleRow
 from engine.oneway_momentum import OneWayMover
 from engine.position_radar import PositionBuild
+from engine.ranking import StockRank
 from engine.sector_leaders import SectorLeader
 from engine.spike_detector import Signal
-from engine.ranking import StockRank
 from sinks.signal_bus import SignalBus
 from sinks.storage import SignalStore
 
@@ -203,79 +204,63 @@ def _position_to_dict(b: PositionBuild) -> dict:
 # Sync callbacks (called from screener thread)
 def _sync_signal(s: Signal) -> None:
     _status["signals_today"] = _status.get("signals_today", 0) + 1
-    try:
+    with contextlib.suppress(asyncio.QueueFull):
         _signal_queue.put_nowait({"type": "signal", "data": _sig_to_dict(s)})
-    except asyncio.QueueFull:
-        pass
 
 
 def _sync_ranking(rows: list[StockRank]) -> None:
     global _latest_rankings
     data = [_rank_to_dict(r) for r in rows]
     _latest_rankings = data
-    try:
+    with contextlib.suppress(asyncio.QueueFull):
         _ranking_queue.put_nowait({"type": "ranking", "data": data})
-    except asyncio.QueueFull:
-        pass
 
 
 def _sync_position(builds: list[PositionBuild]) -> None:
     global _latest_position
     data = [_position_to_dict(b) for b in builds]
     _latest_position = data
-    try:
+    with contextlib.suppress(asyncio.QueueFull):
         _position_queue.put_nowait({"type": "position", "data": data})
-    except asyncio.QueueFull:
-        pass
 
 
 def _sync_oneway(movers: list[OneWayMover]) -> None:
     global _latest_oneway
     data = [_oneway_to_dict(m) for m in movers]
     _latest_oneway = [d for d in data if d["status"] != "EXIT"]
-    try:
+    with contextlib.suppress(asyncio.QueueFull):
         _oneway_queue.put_nowait({"type": "oneway", "data": data})
-    except asyncio.QueueFull:
-        pass
 
 
 def _sync_radar(sigs: list[BigPlayerSignal]) -> None:
     global _latest_radar
     data = [_radar_to_dict(s) for s in sigs]
     _latest_radar = data
-    try:
+    with contextlib.suppress(asyncio.QueueFull):
         _radar_queue.put_nowait({"type": "radar", "data": data})
-    except asyncio.QueueFull:
-        pass
 
 
 def _sync_oimult(rows: list[OIMultipleRow]) -> None:
     global _latest_oimult
     data = [_oimult_to_dict(r) for r in rows]
     _latest_oimult = data
-    try:
+    with contextlib.suppress(asyncio.QueueFull):
         _oimult_queue.put_nowait({"type": "oimult", "data": data})
-    except asyncio.QueueFull:
-        pass
 
 
 def _sync_sector(rows: list[SectorLeader]) -> None:
     global _latest_sector
     data = [_sector_to_dict(r) for r in rows]
     _latest_sector = data
-    try:
+    with contextlib.suppress(asyncio.QueueFull):
         _sector_queue.put_nowait({"type": "sector", "data": data})
-    except asyncio.QueueFull:
-        pass
 
 
 def _sync_feed(status: dict) -> None:
     """Watchdog feed-health update, pushed to clients as a status frame."""
     _status.update(status)
-    try:
+    with contextlib.suppress(asyncio.QueueFull):
         _radar_queue.put_nowait({"type": "status", "data": _status_payload()})
-    except asyncio.QueueFull:
-        pass
 
 
 STATUS_PUSH_SECONDS = 30
@@ -302,10 +287,8 @@ async def _broadcast(raw: list[str]) -> None:
     if dead:
         _clients.difference_update(dead)
         for ws in dead:
-            try:
+            with contextlib.suppress(Exception):
                 await asyncio.wait_for(ws.close(), timeout=1.0)
-            except Exception:
-                pass
         log.info("Dropped %d dead WS client(s) (%d remain)",
                  len(dead), len(_clients))
 

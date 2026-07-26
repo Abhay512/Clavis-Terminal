@@ -41,7 +41,7 @@ class InstrumentState:
             self.prev_close = prev_close
 
     def day_pct(self) -> float:
-        """% move on the day. Base = previous close (what Kite/terminals show); falls back to exchange."""
+        """Percent move on the day, based on the previous close."""
         base = self.prev_close or self.exch_open or self.day_open
         if base <= 0 or self.last_price <= 0:
             return 0.0
@@ -94,7 +94,7 @@ class InstrumentState:
         return bar
 
     def _refresh_baseline(self) -> None:
-        """Cache mean/std of recent 1-min OI deltas for O(1) z-scores. Feed-gap catch-up bars are."""
+        """Cache mean and std of recent OI deltas so z-scores stay O(1)."""
         n = min(len(self.bars), config.BASELINE_BARS)
         if n < config.BASELINE_MIN_BARS:
             self.baseline_std = 0.0

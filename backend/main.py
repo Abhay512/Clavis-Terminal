@@ -16,18 +16,17 @@ from engine.big_player_radar import BigPlayerRadar
 from engine.market_state import MarketState
 from engine.oi_multiple import OIMultipleBoard
 from engine.oneway_momentum import OneWayMomentum
-from engine.rs_leaders import RSLeaders
-from engine.sector_leaders import SectorLeaders
 from engine.position_radar import PositionRadar
 from engine.ranking import StockRanker
+from engine.rs_leaders import RSLeaders
+from engine.sector_leaders import SectorLeaders
 from engine.spike_detector import SpikeDetector
 from feed.backfill import BackfillWorker, fetch_futures_bars, to_parquet_rows
 from feed.tick_queue import TickQueue
 from feed.ticker_manager import TickerManager
 from sinks import signal_bus as sb
 from sinks.baselines import load_flow_baseline, save_flow_baseline
-from sinks.storage import (BarWriter, SignalStore, save_day_refs,
-                           save_eod_oi_snapshot)
+from sinks.storage import BarWriter, SignalStore, save_day_refs, save_eod_oi_snapshot
 from universe import build_universe, save_universe_csv
 
 log = logging.getLogger("main")
@@ -123,6 +122,7 @@ def warm_start(market, ranker, position_engine, oneway_engine,
                day=None, until=None, oimult_engine=None) -> datetime | None:
     """Rebuild today's state from bars already recorded, so a mid-day restart resumes."""
     from datetime import date as _date
+
     from engine.bar_builder import Bar
     from sinks.storage import load_day_refs
     day = day or _date.today()
@@ -526,8 +526,8 @@ def run(start_now: bool = False,
                   f"{s['classification']:<16}{s['side'] or '-':<10}"
                   f"{s['oi_pct']:>7.1f}{s['notional_cr']:>8.1f}"
                   f"{s['score']:>7.0f}")
-    print("\nRun `python replay.py --date {}` for the full forward-return "
-          "report.".format(date.today().isoformat()))
+    print(f"\nRun `python replay.py --date {date.today().isoformat()}` for the full forward-return "
+          "report.")
     store.close()
 
 
@@ -547,6 +547,7 @@ if __name__ == "__main__":
                         datefmt="%H:%M:%S")
     if args.api:
         import uvicorn
+
         import api as api_module
         def _start_api(bus, store, universe_size):
             api_module.init(bus, store, universe_size)

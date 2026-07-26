@@ -12,10 +12,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from engine.market_state import MarketState          # noqa: E402
-from engine.oneway_momentum import OneWayMomentum    # noqa: E402
-from engine.ranking import StockRank                 # noqa: E402
-from universe import Instrument, Universe            # noqa: E402
+from engine.market_state import MarketState  # noqa: E402
+from engine.oneway_momentum import OneWayMomentum  # noqa: E402
+from engine.ranking import StockRank  # noqa: E402
+from universe import Instrument, Universe  # noqa: E402
 
 START = datetime(2026, 1, 5, 9, 20)
 

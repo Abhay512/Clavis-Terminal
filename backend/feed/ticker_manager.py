@@ -1,6 +1,7 @@
 """Manage up to 3 KiteTicker WebSocket connections (Kite hard limit)."""
 from __future__ import annotations
 
+import contextlib
 import logging
 
 from kiteconnect import KiteTicker
@@ -76,10 +77,8 @@ class TickerManager:
 
     def stop(self) -> None:
         for idx, ticker in enumerate(self._tickers):
-            try:
+            with contextlib.suppress(Exception):
                 ticker.stop_retry()
-            except Exception:
-                pass
             try:
                 ticker.close()
             except Exception as exc:

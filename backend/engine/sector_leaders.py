@@ -132,9 +132,8 @@ class SectorLeaders:
             mv = (px - o) / o * 100.0
             d = 1 if mv >= 0 else -1
             prev = self._breakout.get(ul)
-            if abs(mv) >= config.SL_BREAKOUT_MOVE:
-                if prev is None or prev[0] != d:
-                    self._breakout[ul] = (d, ts)
+            if abs(mv) >= config.SL_BREAKOUT_MOVE and (prev is None or prev[0] != d):
+                self._breakout[ul] = (d, ts)
 
     def compute(self, ts: datetime) -> list[SectorLeader]:
         """The current sector-leader board. Called every minute."""

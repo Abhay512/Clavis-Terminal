@@ -136,9 +136,9 @@ class BarWriter:
             rows, self._buffer = self._buffer, []
         if not rows:
             return 0
-        cols = list(zip(*rows))
+        cols = list(zip(*rows, strict=False))
         table = pa.table(
-            {f.name: list(col) for f, col in zip(BAR_SCHEMA, cols)},
+            {f.name: list(col) for f, col in zip(BAR_SCHEMA, cols, strict=False)},
             schema=BAR_SCHEMA)
         path = self.dir / f"part_{self._part:04d}.parquet"
         with open(path, "wb") as f:
@@ -593,7 +593,7 @@ class SignalStore:
             "SELECT * FROM signals WHERE ts LIKE ? ORDER BY ts",
             (f"{day.isoformat()}%",))
         names = [d[0] for d in cur.description]
-        return [dict(zip(names, row)) for row in cur.fetchall()]
+        return [dict(zip(names, row, strict=False)) for row in cur.fetchall()]
 
     # --------------------------------------------------------- EOD finalizer --
     DAY_TABLES = ("signals", "rankings", "position_builds",
