@@ -1,0 +1,274 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" width="1200" height="640" font-family="'JetBrains Mono','Fira Code',Consolas,monospace">
+  <defs>
+    <style>
+      .bg    { fill:#0a0a0a }
+      .card  { fill:#131313 }
+      .surf  { fill:#101010 }
+      .bd    { stroke:#2a2a2a; stroke-width:1; fill:none }
+      .txt   { fill:#e8e8e8 }
+      .mut   { fill:#a3a3a3 }
+      .fnt   { fill:#737373 }
+      .grn   { fill:#4af6c3 }
+      .red   { fill:#ff433d }
+      .amb   { fill:#ffa028 }
+      .blu   { fill:#6db3f2 }
+      .lbl   { font-size:9px; letter-spacing:1.6px; text-transform:uppercase }
+      .h     { font-size:11px; letter-spacing:1.2px }
+      .v     { font-size:12px }
+      .s     { font-size:10px }
+      .xs    { font-size:9px }
+      .b     { font-weight:700 }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1200" height="640"/>
+
+  <!-- header -->
+  <rect class="surf" width="1200" height="46"/>
+  <line x1="0" y1="46" x2="1200" y2="46" class="bd"/>
+  <rect x="20" y="13" width="20" height="20" rx="2" fill="#ffa0281a"/>
+  <path d="M26 23h3l2-4 3 8 2-4h2" stroke="#ffa028" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="50" y="21" class="amb b lbl">CLAVIS TERMINAL</text>
+  <text x="50" y="34" class="fnt xs">The key to understand F&amp;O markets.</text>
+
+  <text x="470" y="20" class="fnt lbl">INSTRUMENTS</text>
+  <text x="470" y="35" class="txt v b">8,812</text>
+  <line x1="560" y1="14" x2="560" y2="34" class="bd"/>
+  <text x="580" y="20" class="fnt lbl">SIGNALS TODAY</text>
+  <text x="580" y="35" class="amb v b">147</text>
+  <line x1="690" y1="14" x2="690" y2="34" class="bd"/>
+  <text x="710" y="20" class="fnt lbl">REGIME</text>
+  <text x="710" y="35" class="grn v b">TREND</text>
+
+  <text x="900" y="30" class="mut s">09:15 &#8212; 15:30 IST</text>
+  <circle cx="1010" cy="25" r="4" fill="#4af6c3"/>
+  <text x="1022" y="29" class="grn xs">CONNECTED</text>
+  <rect x="1108" y="15" width="72" height="20" rx="2" fill="#ff433d1a" stroke="#ff433d66"/>
+  <circle cx="1121" cy="25" r="3.5" fill="#ff433d"/>
+  <text x="1132" y="29" class="red xs b">LIVE</text>
+
+  <!-- conviction funnel panel -->
+  <rect class="card" x="16" y="62" width="1168" height="266" rx="2"/>
+  <rect class="bd" x="16" y="62" width="1168" height="266" rx="2"/>
+  <text x="32" y="84" class="txt h b">CONVICTION FUNNEL</text>
+  <text x="196" y="84" class="fnt xs">probes enter small &#183; survivors are promoted &#183; promoted rides hold</text>
+  <rect x="1050" y="72" width="118" height="18" rx="2" fill="#4af6c31a"/>
+  <text x="1060" y="85" class="grn xs">3 TOP &#183; 11 PROBES</text>
+
+  <!-- top board header -->
+  <rect x="32" y="96" width="1136" height="18" fill="#ffa0281a"/>
+  <text x="40" y="109" class="amb xs b">TOP BOARD</text>
+  <text x="150" y="109" class="fnt xs">promoted &#183; hold to close</text>
+
+  <g class="xs fnt">
+    <text x="40"  y="130">SIDE</text>
+    <text x="90"  y="130">STOCK</text>
+    <text x="220" y="130">ENTRY</text>
+    <text x="320" y="130">LAST</text>
+    <text x="400" y="130">P&amp;L</text>
+    <text x="470" y="130">BUILD</text>
+    <text x="545" y="130">DOM</text>
+    <text x="610" y="130">CLEAN</text>
+    <text x="680" y="130">RETR</text>
+    <text x="750" y="130">KIND</text>
+    <text x="835" y="130">PROMOTED</text>
+    <text x="935" y="130">STOP</text>
+    <text x="1015" y="130">EXIT RISK</text>
+  </g>
+  <line x1="32" y1="136" x2="1168" y2="136" class="bd"/>
+
+  <!-- top board rows -->
+  <g class="v">
+    <text x="40"  y="155" class="grn b">UP</text>
+    <text x="90"  y="155" class="txt b">NAUKRI</text>
+    <text x="220" y="155" class="mut">09:41 @ 1442.0</text>
+    <text x="320" y="155" class="txt">1545.0</text>
+    <text x="400" y="155" class="grn b">+7.14%</text>
+    <text x="470" y="155" class="txt">31x</text>
+    <text x="545" y="155" class="txt">0.91</text>
+    <text x="610" y="155" class="txt">0.88</text>
+    <text x="680" y="155" class="txt">0.06</text>
+    <text x="750" y="155" class="blu s">loader</text>
+    <text x="835" y="155" class="amb s">10:14</text>
+    <text x="935" y="155" class="mut">1430.6</text>
+  </g>
+  <rect x="1015" y="147" width="120" height="6" rx="3" fill="#2a2a2a"/>
+  <rect x="1015" y="147" width="22"  height="6" rx="3" fill="#4af6c3"/>
+
+  <g class="v">
+    <text x="40"  y="180" class="red b">DOWN</text>
+    <text x="90"  y="180" class="txt b">DRREDDY</text>
+    <text x="220" y="180" class="mut">09:58 @ 6318.5</text>
+    <text x="320" y="180" class="txt">6073.4</text>
+    <text x="400" y="180" class="grn b">+3.88%</text>
+    <text x="470" y="180" class="txt">24x</text>
+    <text x="545" y="180" class="txt">0.86</text>
+    <text x="610" y="180" class="txt">0.83</text>
+    <text x="680" y="180" class="txt">0.11</text>
+    <text x="750" y="180" class="blu s">nr</text>
+    <text x="835" y="180" class="amb s">10:31</text>
+    <text x="935" y="180" class="mut">6382.1</text>
+  </g>
+  <rect x="1015" y="172" width="120" height="6" rx="3" fill="#2a2a2a"/>
+  <rect x="1015" y="172" width="41"  height="6" rx="3" fill="#4af6c3"/>
+
+  <g class="v">
+    <text x="40"  y="205" class="grn b">UP</text>
+    <text x="90"  y="205" class="txt b">CONCOR</text>
+    <text x="220" y="205" class="mut">10:06 @ 812.4</text>
+    <text x="320" y="205" class="txt">841.4</text>
+    <text x="400" y="205" class="grn b">+3.57%</text>
+    <text x="470" y="205" class="txt">18x</text>
+    <text x="545" y="205" class="txt">0.79</text>
+    <text x="610" y="205" class="txt">0.81</text>
+    <text x="680" y="205" class="txt">0.14</text>
+    <text x="750" y="205" class="blu s">squeeze</text>
+    <text x="835" y="205" class="amb s">10:44</text>
+    <text x="935" y="205" class="mut">806.7</text>
+  </g>
+  <rect x="1015" y="197" width="120" height="6" rx="3" fill="#2a2a2a"/>
+  <rect x="1015" y="197" width="68"  height="6" rx="3" fill="#ffa028"/>
+
+  <!-- probes header -->
+  <rect x="32" y="222" width="1136" height="18" fill="#101010"/>
+  <text x="40" y="235" class="mut xs b">PROBES</text>
+  <text x="120" y="235" class="fnt xs">open &#183; small size &#183; promotion energy</text>
+
+  <g class="v">
+    <text x="40"  y="262" class="grn b">UP</text>
+    <text x="90"  y="262" class="txt">KALYANKJIL</text>
+    <text x="220" y="262" class="mut">10:12 @ 511.9</text>
+    <text x="320" y="262" class="txt">516.7</text>
+    <text x="400" y="262" class="grn">+0.94%</text>
+    <text x="470" y="262" class="txt">12x</text>
+    <text x="545" y="262" class="txt">0.72</text>
+    <text x="610" y="262" class="txt">0.76</text>
+    <text x="680" y="262" class="txt">0.21</text>
+    <text x="750" y="262" class="blu s">normal</text>
+  </g>
+  <text x="835" y="262" class="fnt xs">PROMO</text>
+  <rect x="880" y="254" width="100" height="6" rx="3" fill="#2a2a2a"/>
+  <rect x="880" y="254" width="83"  height="6" rx="3" fill="#ffa028"/>
+  <text x="990" y="262" class="amb xs">83%</text>
+  <rect x="1015" y="270" width="120" height="6" rx="3" fill="#2a2a2a"/>
+
+  <g class="v">
+    <text x="40"  y="290" class="red b">DOWN</text>
+    <text x="90"  y="290" class="txt">TECHM</text>
+    <text x="220" y="290" class="mut">10:19 @ 1688.0</text>
+    <text x="320" y="290" class="txt">1691.4</text>
+    <text x="400" y="290" class="red">-0.20%</text>
+    <text x="470" y="290" class="txt">9x</text>
+    <text x="545" y="290" class="txt">0.66</text>
+    <text x="610" y="290" class="txt">0.69</text>
+    <text x="680" y="290" class="txt">0.34</text>
+    <text x="750" y="290" class="blu s">normal</text>
+  </g>
+  <text x="835" y="290" class="fnt xs">PROMO</text>
+  <rect x="880" y="282" width="100" height="6" rx="3" fill="#2a2a2a"/>
+  <rect x="880" y="282" width="31"  height="6" rx="3" fill="#a3a3a3"/>
+  <text x="990" y="290" class="mut xs">31%</text>
+
+  <g class="v">
+    <text x="40"  y="316" class="grn b">UP</text>
+    <text x="90"  y="316" class="txt">FEDERALBNK</text>
+    <text x="220" y="316" class="mut">10:22 @ 214.6</text>
+    <text x="320" y="316" class="txt">216.9</text>
+    <text x="400" y="316" class="grn">+1.07%</text>
+    <text x="470" y="316" class="txt">15x</text>
+    <text x="545" y="316" class="txt">0.81</text>
+    <text x="610" y="316" class="txt">0.78</text>
+    <text x="680" y="316" class="txt">0.12</text>
+    <text x="750" y="316" class="blu s">loader</text>
+  </g>
+  <text x="835" y="316" class="fnt xs">PROMO</text>
+  <rect x="880" y="308" width="100" height="6" rx="3" fill="#2a2a2a"/>
+  <rect x="880" y="308" width="96"  height="6" rx="3" fill="#4af6c3"/>
+  <text x="990" y="316" class="grn xs">96%</text>
+
+  <!-- ranking board -->
+  <rect class="card" x="16" y="342" width="576" height="282" rx="2"/>
+  <rect class="bd"   x="16" y="342" width="576" height="282" rx="2"/>
+  <text x="32" y="364" class="txt h b">OI BUILD-UP RANKING</text>
+  <text x="230" y="364" class="fnt xs">&#8377; crore notional &#183; per minute</text>
+
+  <g class="xs fnt">
+    <text x="32"  y="386">#</text>
+    <text x="60"  y="386">STOCK</text>
+    <text x="172" y="386">LTP</text>
+    <text x="240" y="386">DAY%</text>
+    <text x="310" y="386">BUY-SIDE</text>
+    <text x="410" y="386">WRITE</text>
+    <text x="490" y="386">TOP STRIKE</text>
+  </g>
+  <line x1="32" y1="392" x2="576" y2="392" class="bd"/>
+
+  <g class="s">
+    <text x="32" y="412" class="fnt">1</text><text x="60" y="412" class="txt b">NAUKRI</text>
+    <text x="172" y="412" class="txt">1545.0</text><text x="240" y="412" class="grn">+7.14</text>
+    <text x="310" y="412" class="grn">62.4</text><text x="410" y="412" class="mut">8.1</text>
+    <text x="490" y="412" class="mut">1560CE</text>
+    <text x="32" y="434" class="fnt">2</text><text x="60" y="434" class="txt b">DRREDDY</text>
+    <text x="172" y="434" class="txt">6073.4</text><text x="240" y="434" class="red">-3.88</text>
+    <text x="310" y="434" class="grn">48.9</text><text x="410" y="434" class="mut">12.6</text>
+    <text x="490" y="434" class="mut">6000PE</text>
+    <text x="32" y="456" class="fnt">3</text><text x="60" y="456" class="txt b">CONCOR</text>
+    <text x="172" y="456" class="txt">841.4</text><text x="240" y="456" class="grn">+3.57</text>
+    <text x="310" y="456" class="grn">37.2</text><text x="410" y="456" class="mut">5.4</text>
+    <text x="490" y="456" class="mut">850CE</text>
+    <text x="32" y="478" class="fnt">4</text><text x="60" y="478" class="txt b">KALYANKJIL</text>
+    <text x="172" y="478" class="txt">516.7</text><text x="240" y="478" class="grn">+0.94</text>
+    <text x="310" y="478" class="grn">29.8</text><text x="410" y="478" class="mut">9.9</text>
+    <text x="490" y="478" class="mut">520CE</text>
+    <text x="32" y="500" class="fnt">5</text><text x="60" y="500" class="txt b">FEDERALBNK</text>
+    <text x="172" y="500" class="txt">216.9</text><text x="240" y="500" class="grn">+1.07</text>
+    <text x="310" y="500" class="grn">24.1</text><text x="410" y="500" class="mut">3.7</text>
+    <text x="490" y="500" class="mut">218CE</text>
+    <text x="32" y="522" class="fnt">6</text><text x="60" y="522" class="txt b">TECHM</text>
+    <text x="172" y="522" class="txt">1691.4</text><text x="240" y="522" class="red">-1.42</text>
+    <text x="310" y="522" class="grn">21.7</text><text x="410" y="522" class="mut">14.2</text>
+    <text x="490" y="522" class="mut">1680PE</text>
+    <text x="32" y="544" class="fnt">7</text><text x="60" y="544" class="txt b">CDSL</text>
+    <text x="172" y="544" class="txt">1602.0</text><text x="240" y="544" class="grn">+2.11</text>
+    <text x="310" y="544" class="grn">18.3</text><text x="410" y="544" class="mut">6.0</text>
+    <text x="490" y="544" class="mut">1620CE</text>
+    <text x="32" y="566" class="fnt">8</text><text x="60" y="566" class="txt b">NATIONALUM</text>
+    <text x="172" y="566" class="txt">241.8</text><text x="240" y="566" class="grn">+1.88</text>
+    <text x="310" y="566" class="grn">15.9</text><text x="410" y="566" class="mut">4.4</text>
+    <text x="490" y="566" class="mut">245CE</text>
+  </g>
+  <rect x="32" y="588" width="544" height="4" rx="2" fill="#2a2a2a"/>
+  <rect x="32" y="588" width="392" height="4" rx="2" fill="#4af6c3"/>
+  <text x="32" y="608" class="fnt xs">BUY-SIDE / WRITE BREADTH</text>
+  <text x="500" y="608" class="grn xs">72% BULL</text>
+
+  <!-- signal feed -->
+  <rect class="card" x="608" y="342" width="576" height="282" rx="2"/>
+  <rect class="bd"   x="608" y="342" width="576" height="282" rx="2"/>
+  <text x="624" y="364" class="txt h b">SIGNAL FEED</text>
+  <text x="740" y="364" class="fnt xs">tick-instant OI spikes</text>
+  <circle cx="1160" cy="359" r="4" fill="#4af6c3"/>
+
+  <g class="s">
+    <text x="624" y="390" class="fnt">10:47:12</text><text x="700" y="390" class="grn b">BUY_SIDE</text>
+    <text x="790" y="390" class="txt">NAUKRI 1560CE</text><text x="960" y="390" class="mut">z 6.4</text><text x="1030" y="390" class="amb">+18.2% OI</text>
+    <text x="624" y="412" class="fnt">10:46:51</text><text x="700" y="412" class="red b">SELL_SIDE</text>
+    <text x="790" y="412" class="txt">TECHM 1680PE</text><text x="960" y="412" class="mut">z 4.9</text><text x="1030" y="412" class="amb">+11.4% OI</text>
+    <text x="624" y="434" class="fnt">10:45:03</text><text x="700" y="434" class="grn b">BUY_SIDE</text>
+    <text x="790" y="434" class="txt">CONCOR 850CE</text><text x="960" y="434" class="mut">z 5.8</text><text x="1030" y="434" class="amb">+22.7% OI</text>
+    <text x="624" y="456" class="fnt">10:44:20</text><text x="700" y="456" class="blu b">FUT_LONG</text>
+    <text x="790" y="456" class="txt">CDSL FUT</text><text x="960" y="456" class="mut">z 3.6</text><text x="1030" y="456" class="amb">+4.1% OI</text>
+    <text x="624" y="478" class="fnt">10:43:58</text><text x="700" y="478" class="red b">SELL_SIDE</text>
+    <text x="790" y="478" class="txt">DRREDDY 6000PE</text><text x="960" y="478" class="mut">z 7.1</text><text x="1030" y="478" class="amb">+31.5% OI</text>
+    <text x="624" y="500" class="fnt">10:42:11</text><text x="700" y="500" class="grn b">BUY_SIDE</text>
+    <text x="790" y="500" class="txt">FEDERALBNK 218CE</text><text x="960" y="500" class="mut">z 4.2</text><text x="1030" y="500" class="amb">+9.8% OI</text>
+    <text x="624" y="522" class="fnt">10:41:44</text><text x="700" y="522" class="grn b">BUY_SIDE</text>
+    <text x="790" y="522" class="txt">NATIONALUM 245CE</text><text x="960" y="522" class="mut">z 3.9</text><text x="1030" y="522" class="amb">+7.3% OI</text>
+    <text x="624" y="544" class="fnt">10:40:02</text><text x="700" y="544" class="red b">SELL_SIDE</text>
+    <text x="790" y="544" class="txt">HDFCBANK 1980CE</text><text x="960" y="544" class="mut">z 3.4</text><text x="1030" y="544" class="amb">+6.6% OI</text>
+    <text x="624" y="566" class="fnt">10:39:27</text><text x="700" y="566" class="blu b">FUT_SHORT</text>
+    <text x="790" y="566" class="txt">TECHM FUT</text><text x="960" y="566" class="mut">z 3.1</text><text x="1030" y="566" class="amb">+3.2% OI</text>
+  </g>
+  <line x1="624" y1="584" x2="1168" y2="584" class="bd"/>
+  <text x="624" y="606" class="fnt xs">147 SIGNALS TODAY &#183; 8,812 INSTRUMENTS &#183; FEED LATENCY 42 ms</text>
+</svg>
