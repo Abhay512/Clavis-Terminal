@@ -1,5 +1,5 @@
 # Runtime: Python 3.11+
-kiteconnect>=4.2.0
+kiteconnect>=5.2.1
 pyarrow>=13.0.0
 pandas>=2.0.0
 fastapi>=0.100.0
