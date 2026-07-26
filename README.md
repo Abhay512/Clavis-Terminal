@@ -579,12 +579,19 @@ This project runs a real trading desk. The parts that constitute the actual edge
 are withheld deliberately, and the repository is honest about where the gaps are
 rather than pretending they do not exist.
 
-- **`engine/oneway_momentum.py` ships as a reference implementation.** It has the
-  same public surface as production, produces the same shape of output, passes
-  the same smoke test and drives the entire downstream stack end to end. What it
-  does not contain is the production entry model: the alternative entry paths
-  that open the opening window, the structure machine behind them, the structural
-  stop placement, and the ordering and interaction of the gates.
+- **The decision engines ship as reference implementations.** Each has the same
+  public surface as production, produces the same shape of output, passes the
+  same smoke test and drives the entire downstream stack end to end:
+
+  | module | what the reference version omits |
+  |---|---|
+  | `engine/oneway_momentum.py` | the alternative entry paths that open the opening window, the structure machine behind them, structural stop placement, and the ordering and interaction of the gates |
+  | `engine/big_player_radar.py` | strike weighting, pace normalisation and the strength curve |
+  | `engine/position_radar.py` | the flow-acceleration breakout rule, its agreement conditions and re-arm behaviour |
+  | `engine/oi_multiple.py` | baseline selection, near-spot weighting, the writer read and the counter-tape flag |
+  | `engine/rs_leaders.py` | qualification gates and snapshot timing |
+  | `engine/sector_leaders.py` | sector-strength weighting and leader qualification |
+
 - **Calibrated thresholds are replaced with neutral reference defaults.** The
   `OW_*`, `CONV_*`, `LOADER_*`, `NR_*`, `SQZ_*` and `REGIME_*` blocks in
   `config.py` keep every parameter name, so the architecture reads correctly and
@@ -592,8 +599,8 @@ rather than pretending they do not exist.
 - **No recorded market data, research notebooks or session logs are included.**
 
 Everything else - ingestion, universe construction, bar building, the four-way
-flow decomposition, spike detection, ranking, the supporting boards, storage,
-migrations, replay, the API and the entire dashboard - is complete and runnable.
+flow decomposition, spike detection, ranking, storage, migrations, replay, the
+API and the entire dashboard - is complete and runnable.
 
 ---
 
