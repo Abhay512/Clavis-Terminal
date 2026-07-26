@@ -70,11 +70,9 @@ of names being accumulated in one direction right now — while the session is s
 [Verifying the connection](#verifying-the-connection) ·
 [Troubleshooting](#troubleshooting) ·
 [Replay and validation](#replay-and-validation) ·
-[Production engineering](#production-engineering) ·
 [Scale and performance](#scale-and-performance)
 
 **The rest**
-[Roadmap](#roadmap) ·
 [Contributing](#contributing) ·
 [Note on the published source](#note-on-the-published-source) ·
 [Disclaimer](#disclaimer)
@@ -336,19 +334,17 @@ Two structural facts make that trade a poor one *at this stage of the system's l
   frequently does not — it keeps producing well-formed, high-scoring, wrong answers, and the
   first honest signal is the drawdown.
 
-**None of that says learning has no place here — it says learning is the second layer, not the
-first.** Every per-minute metric the engine computes is already recorded to disk, which means
-the archive *is* a labelled training set, growing every session, leak-free by construction
-because replay can reproduce any day exactly as it was seen live. The planned shape is
-gradient-boosted trees under walk-forward validation, learning selectively, sitting **above**
-the rule gates as an advisor that re-ranks candidates the deterministic search has already
-found and explained.
+**None of that says learning has no place here — it says learning belongs on top of the search,
+not in place of it.** A model that re-ranks an exhaustive, explainable candidate set is strictly
+better positioned than one asked to do the search itself: it inherits the full coverage, keeps
+the audit trail, and cannot silently drop a name it never scored.
 
-That ordering is not a compromise. A model that re-ranks an exhaustive, explainable candidate
-set is strictly better positioned than one asked to do the search itself — it inherits the
-coverage, keeps the audit trail, and cannot silently drop a name it never scored.
+The groundwork for that already exists as a side effect of how the system is built. Every
+per-minute metric the engine computes is recorded to disk, which means the archive is a
+labelled dataset, growing every session, leak-free by construction because replay can reproduce
+any day exactly as it was seen live.
 
-> **The search runs on rules. Learning is queued to re-rank what the search already found.**
+> **The search runs on rules. Anything learned re-ranks what the search already found.**
 
 ---
 
@@ -480,7 +476,7 @@ clavis-terminal/
 │   │   ├── useWebSocket.ts      reconnecting client with backoff
 │   │   └── useLiveData.ts       reducer mapping socket frames → app state
 │   └── lib/                     shared types and demo-mode fixtures
-└── docs/assets/                 architecture, funnel, pipeline and roadmap diagrams
+└── docs/assets/                 architecture, funnel and pipeline diagrams
 ```
 
 ---
@@ -998,26 +994,6 @@ after each signal fired.
 
 ---
 
-## Production engineering
-
-This system has to survive a live market session unattended, so a large share of the codebase is
-failure handling rather than analytics.
-
-| Concern | How it is handled |
-|---|---|
-| **Feed stall** | A watchdog tracks time since the last tick. Past the stale threshold it forces a reconnect, retries a bounded number of times, then re-checks the access token and raises a `feed_down` banner on the dashboard — instead of silently showing numbers that stopped updating. |
-| **Gap repair** | Once the feed returns, futures minute bars for the outage window are refetched from the historical REST API, rate-limited to the broker's ceiling, and spliced into the recording. Repaired rows are flagged `backfilled`, and the window is written to `feed_gaps` so later analysis knows which minutes are artifact. |
-| **Crash safety** | Bars are buffered and flushed by a background thread into numbered part files on a short interval. A hard kill loses at most one interval and never damages a previously written part. |
-| **Mid-day restart** | On boot the engine reads back today's already-recorded bars and rebuilds in-memory state — session extremes, baselines, cumulative flow — before resuming the live feed. A restart does not reset the day. |
-| **Double-run** | A PID-checked lock file. A stale lock from a crashed run is detected and taken over; a genuinely running second instance is refused. |
-| **Schema drift** | SQLite migrations are additive and idempotent, checked against `PRAGMA table_info` at startup. Databases written by earlier versions keep working. |
-| **Silent instruments** | Illiquid strikes that trade nothing for a minute would leave holes in the time series. Bar closing carries them forward, so every contract has a continuous series. |
-| **Day references** | Previous close and exchange open are learned from full-mode ticks and persisted per token, so day-percentage figures match what a broker terminal shows rather than drifting from a first-seen price. |
-| **End of day** | A finalizer flushes remaining bars, writes an EOD OI snapshot for tomorrow's multiple board, appends the day's flow baselines, then runs `ANALYZE`, `optimize` and `VACUUM` and prints per-table row counts as a completeness receipt. |
-| **Secrets** | Credentials live only in `backend/.env`, which is git-ignored. Nothing in this repository contains a key at any commit, and `auth.py` writes the daily token back to `.env` rather than to any tracked file. |
-
----
-
 ## Scale and performance
 
 | Dimension | Figure |
@@ -1034,67 +1010,6 @@ Single-process by design. The broker's WebSocket callbacks run on their own thre
 ticks to a queue; one consumer thread owns every piece of mutable state. Rolling statistics are
 cached rather than recomputed, keeping the per-tick check constant-time — which is the specific
 reason instant detection across the entire chain is possible without a cluster behind it.
-
----
-
-## Roadmap
-
-<div align="center">
-<img src="docs/assets/roadmap.svg" alt="Clavis Terminal roadmap" width="100%">
-</div>
-
-### Track 01 — Shipped: the live platform
-
-| item | state |
-|:--|:--|
-| Full-chain ingestion under the broker's three-socket ceiling | ✅ live |
-| Four-way flow decomposition with roll-aware netting | ✅ live |
-| Dual-path spike detection, intrabar and minute-close | ✅ live |
-| Conviction funnel with regime-scaled budgets, stops and sizing | ✅ live |
-| Eight decision boards, persisted every minute | ✅ live |
-| Survivability layer — watchdog, backfill, warm restart, crash-safe writes | ✅ live |
-| Full-session recording and offline replay through the same engine | ✅ live |
-| Real-time terminal interface with promotion and exit-risk meters | ✅ live |
-
-### Track 02 — Near term: widen the net
-
-| item | problem it solves |
-|:--|:--|
-| **Broader entry coverage** | The funnel currently admits a minority of each day's genuine movers. Missed names are missed edge, because the profitable part of a ride happens before promotion. The open problem is admitting more of the right names during the opening window *without* buying tops — momentum-style entry at session extremes has been tested and does not work, so the answer has to be a different family of entry model. |
-| **Opening-window regime detection** | The regime meter is reliable by mid-morning but thin in the first half hour — which is when its throttle would be worth the most. Better opening tells (gap-hold breadth, cross-sectional dispersion, sector concentration) would compound through every downstream decision. |
-| **Direction-aware regime** | The meter reads trend *strength* without reading trend *side*, so a strongly one-directional tape can green-light full-size entries in the wrong direction. Index-relative rather than absolute reasoning is the fix. |
-| **Unwind-flow framework** | Build-up metrics are structurally blind to moves driven by trapped writers covering, where open interest *falls* while price runs. A principled treatment of exit flow as a first-class signal closes that gap. |
-| **Paper execution log** | A shadow order book recording the exact contract, entry, stop and exit each signal implies — so slippage and option convexity are measured rather than assumed. |
-
-### Track 03 — Medium term: learn from the archive
-
-| item | shape |
-|:--|:--|
-| **Supervised advisor layer** | Gradient-boosted trees over the recorded per-minute metrics, sitting above the rule gates. Re-ranks candidates the deterministic search already found; never replaces the search. |
-| **Walk-forward gating** | No in-sample tuning. A model ships only if it holds up on sessions it was never fitted to, under the same falsification standard applied to every rule. |
-| **Cross-session regime classifier** | Trained across many recorded days rather than read live off a single tape, with the live meter retained as the fallback. |
-| **Automated post-session audit** | A generated report per day: what fired, what was taken, what each returned, and which specific gate rejected each of the day's real movers. Tuning driven by evidence instead of recollection. |
-| **Versioned feature store** | Replay-reproducible and leak-free by construction, because any day can be regenerated exactly as it was seen live. |
-
-### Track 04 — Platform: scale it out
-
-| item | what it unlocks |
-|:--|:--|
-| **Split the process** | Ingestion, analytics and API already communicate only through the bus. Promoting that bus to Redis Streams or NATS lets them run as independent services, adds horizontal fan-out for many dashboards, and lets the analytics layer restart without dropping the feed. |
-| **Columnar time-series store** | Parquet plus SQLite is right for one machine and one year. ClickHouse or TimescaleDB makes cross-session queries over tens of millions of instrument-minutes interactive rather than batch. |
-| **Shard the universe** | The three-socket, nine-thousand-instrument ceiling is the binding constraint on coverage. Multiple keyed workers publishing into a shared bus lift it — and bring index option chains, currently out of scope, into range. |
-| **Containerised deployment** | A Compose stack for engine, API and dashboard, with a scheduled pre-market job that runs authentication and a health check before the bell instead of relying on the operator remembering. |
-| **Alerting fan-out** | Telegram, webhook and mobile-push subscribers on the same bus, so the terminal does not have to be on screen to be useful. |
-| **Broker-agnostic feed adapter** | Ingestion is the only layer coupled to a specific broker. One adapter interface behind `feed/` lets the same engine run on a different data source, or against a simulated feed in continuous integration. |
-
-### The constraint that orders all four tracks
-
-> Nothing ships that cannot be **explained on screen**, **reproduced from a recording**, and
-> **falsified on a session it was never fitted to.**
-
-Learned components are welcome inside that boundary and are planned as an advisory layer above
-the rule gates — the archive of per-minute metrics already exists to train them. What is not
-welcome is a signal whose reasoning cannot be read off the board at the moment it fires.
 
 ---
 

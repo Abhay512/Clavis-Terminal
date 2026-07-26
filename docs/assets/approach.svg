@@ -26,7 +26,7 @@
   <rect x="782" y="94" width="418" height="56" rx="8" fill="url(#rgt)" stroke="#4b3d75"/>
   <circle cx="806" cy="122" r="5" fill="#b592f6"/>
   <text x="824" y="118" class="t" font-size="15" font-weight="800">Learned model</text>
-  <text x="824" y="138" class="s" fill="#9d8bc4">planned as an advisory layer above it</text>
+  <text x="824" y="138" class="s" fill="#9d8bc4">the usual alternative approach</text>
 
   <!-- rows -->
   <g class="s">
@@ -85,5 +85,5 @@
   <text x="64" y="602" class="t" font-size="15" font-weight="600">The hard part of the problem was never the classifier. It was the search.</text>
   <text x="64" y="628" class="m s">Finding which few names, out of a universe of thousands of contracts, are being accumulated one-directionally right now is a search over live flow - and the rule</text>
   <text x="64" y="646" class="m s">engine performs that search exhaustively, every minute, with a reason attached to every hit. A learned model would be asked to approximate the same ranking, from</text>
-  <text x="64" y="664" class="m s">far less data, and hand back a number instead of an explanation. So the search runs on rules; learning is queued to re-rank what the search already found.</text>
+  <text x="64" y="664" class="m s">far less data, and hand back a number instead of an explanation. So the search runs on rules; anything learned re-ranks what the search already found.</text>
 </svg>
