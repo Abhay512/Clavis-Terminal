@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  :root {
+    color-scheme: dark;
+    --scrollbar-bg:    #101010;
+    --scrollbar-thumb: #2a2a2a;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  html, body {
+    height: 100%;
+    background: #0a0a0a;
+    color: #e8e8e8;
+  }
+
+  /* Custom scrollbar - square, terminal style */
+  ::-webkit-scrollbar              { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track        { background: var(--scrollbar-bg); }
+  ::-webkit-scrollbar-thumb        { background: var(--scrollbar-thumb); }
+  ::-webkit-scrollbar-thumb:hover  { background: #3a3a3a; }
+
+  ::selection { background: rgba(255, 160, 40, 0.30); color: #e8e8e8; }
+}
+
+@layer utilities {
+  .tabular-nums { font-variant-numeric: tabular-nums; }
+  /* keep in sync with fontSize["2xs"] in tailwind.config.ts */
+  .text-2xs     { font-size: 0.7rem; line-height: 1rem; }
+
+  .bg-green-glow { background: none; }
+  .bg-red-glow   { background: none; }
+}
