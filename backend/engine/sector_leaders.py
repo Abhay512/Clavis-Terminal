@@ -1,4 +1,9 @@
-"""Shadow board: leaders of the strongest NSE sector indices. Trades nothing."""
+"""Shadow board: leaders of the strongest NSE sector indices. Trades nothing.
+
+Reference implementation. The production board's sector-strength weighting and
+leader qualification are not published; this version scores a sector by the
+mean move of its members and takes the strongest names inside it.
+"""
 from __future__ import annotations
 
 import logging
@@ -116,8 +121,7 @@ class SectorLeaders:
         return out
 
     def _update_breakouts(self, ts: datetime) -> None:
-        """Record, per stock, the first minute it crossed SL_BREAKOUT_MOVE in its current direction.."""
-        reset = config.SL_BREAKOUT_MOVE * 0.5
+        """First minute a stock crossed SL_BREAKOUT_MOVE in its direction."""
         for ul, fut in self.market.futures_by_underlying.items():
             if ul not in SECTOR_MAP:
                 continue
@@ -126,45 +130,41 @@ class SectorLeaders:
             if o <= 0 or px <= 0:
                 continue
             mv = (px - o) / o * 100.0
-            amv = abs(mv)
             d = 1 if mv >= 0 else -1
             prev = self._breakout.get(ul)
-            if amv >= config.SL_BREAKOUT_MOVE:
-                if prev is None or prev[0] != d:   # first crossing, or direction flip
+            if abs(mv) >= config.SL_BREAKOUT_MOVE:
+                if prev is None or prev[0] != d:
                     self._breakout[ul] = (d, ts)
-            elif amv < reset and prev is not None:
-                del self._breakout[ul]             # back to flat - forget it
 
     def compute(self, ts: datetime) -> list[SectorLeader]:
-        """The current sector-leader board. Called every minute; cheap."""
+        """The current sector-leader board. Called every minute."""
         self._update_breakouts(ts)
         moves = self._sector_moves()
-        strengths = []          # (abs_strength, signed_strength, sector, members)
+
+        sectors = []
         for sec, members in moves.items():
             if len(members) < config.SL_MIN_SECTOR_MEMBERS:
                 continue
-            direction = 1 if sum(m[0] for m in members) >= 0 else -1
-            dirmoves = sorted((m[0] * direction for m in members), reverse=True)
-            strength = sum(dirmoves[:config.SL_SECTOR_STRENGTH_N]) / \
-                min(config.SL_SECTOR_STRENGTH_N, len(dirmoves))
-            strengths.append((abs(strength), strength * direction, sec, direction, members))
-        # keep the strongest sectors
-        strengths.sort(key=lambda x: -x[0])
+            strength = sum(m[0] for m in members) / len(members)
+            sectors.append((abs(strength), strength, sec, members))
+        sectors.sort(key=lambda x: -x[0])
+
         board: list[SectorLeader] = []
-        for s_rank, (_, signed, sec, direction, members) in enumerate(
-                strengths[:config.SL_TOP_SECTORS], 1):
+        for s_rank, (_, strength, sec, members) in enumerate(
+                sectors[:config.SL_TOP_SECTORS], 1):
+            direction = 1 if strength >= 0 else -1
             leaders = sorted(members, key=lambda m: -m[0] * direction)
-            for i, (mv, ul, px) in enumerate(leaders[:config.SL_LEADERS_PER_SECTOR], 1):
+            for i, (mv, ul, px) in enumerate(
+                    leaders[:config.SL_LEADERS_PER_SECTOR], 1):
                 if mv * direction < config.SL_MIN_LEAD_MOVE:
                     continue
                 bo = self._breakout.get(ul)
-                breakout_ts = bo[1] if (bo and bo[0] == direction) else None
                 board.append(SectorLeader(
-                    ts=ts, sector=sec, sector_strength=round(signed, 2),
+                    ts=ts, sector=sec, sector_strength=round(strength, 2),
                     sector_rank=s_rank, underlying=ul,
                     direction="BUY" if direction > 0 else "SELL",
                     move_pct=round(mv, 2), rank_in_sector=i, fut_price=px,
-                    breakout_ts=breakout_ts))
+                    breakout_ts=bo[1] if (bo and bo[0] == direction) else None))
         return board
 
     def maybe_lock(self, ts: datetime) -> list[SectorLeader]:
