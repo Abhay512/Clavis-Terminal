@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 700" width="1240" height="700" font-family="Inter,'Segoe UI',system-ui,sans-serif">
+  <defs>
+    <linearGradient id="ah" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4af6c3"/><stop offset="1" stop-color="#b592f6"/></linearGradient>
+    <linearGradient id="lft" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#173a31"/><stop offset="1" stop-color="#101a17"/></linearGradient>
+    <linearGradient id="rgt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#241c3d"/><stop offset="1" stop-color="#14121e"/></linearGradient>
+    <style>
+      .bg{fill:#0b0d10}
+      .t{fill:#e9ecf1}.f{fill:#6d7785}.m{fill:#9aa4b2}
+      .n{font-size:14px;font-weight:700}
+      .s{font-size:11.5px}
+      .xs{font-size:9.5px;letter-spacing:1.6px}
+      .row{stroke:#232a36;stroke-width:1}
+    </style>
+  </defs>
+  <rect class="bg" width="1240" height="700"/>
+
+  <text x="40" y="46" font-size="24" font-weight="800" fill="url(#ah)">Rules or a learned model?</text>
+  <text x="40" y="68" class="f s">both answer the same question. they differ in what they can tell you at the moment a position opens.</text>
+
+  <!-- headers -->
+  <rect x="332" y="94" width="430" height="56" rx="8" fill="url(#lft)" stroke="#2f5a4c"/>
+  <circle cx="356" cy="122" r="5" fill="#4af6c3"/>
+  <text x="374" y="118" class="t" font-size="15" font-weight="800">Deterministic rule engine</text>
+  <text x="374" y="138" class="s" fill="#7fb8a6">what this system runs today</text>
+
+  <rect x="782" y="94" width="418" height="56" rx="8" fill="url(#rgt)" stroke="#4b3d75"/>
+  <circle cx="806" cy="122" r="5" fill="#b592f6"/>
+  <text x="824" y="118" class="t" font-size="15" font-weight="800">Learned model</text>
+  <text x="824" y="138" class="s" fill="#9d8bc4">planned as an advisory layer above it</text>
+
+  <!-- rows -->
+  <g class="s">
+    <!-- row 1 -->
+    <line class="row" x1="40" y1="168" x2="1200" y2="168"/>
+    <text x="40" y="196" class="t n">Why it fired</text>
+    <text x="40" y="216" class="f">the trader has to agree before size goes on</text>
+    <text x="356" y="196" class="m">Readable on the board: the gate, the</text>
+    <text x="356" y="214" class="m">threshold and the value that crossed it.</text>
+    <text x="806" y="196" class="m">Recoverable as attribution, not as a</text>
+    <text x="806" y="214" class="m">sentence. Weights, not reasons.</text>
+
+    <!-- row 2 -->
+    <line class="row" x1="40" y1="238" x2="1200" y2="238"/>
+    <text x="40" y="266" class="t n">Data it needs</text>
+    <text x="40" y="286" class="f">minute-level option OI is not vendor-sold</text>
+    <text x="356" y="266" class="m">Runs correctly on day one. Each stock is</text>
+    <text x="356" y="284" class="m">measured against its own recent behaviour.</text>
+    <text x="806" y="266" class="m">Wants hundreds of sessions before its</text>
+    <text x="806" y="284" class="m">estimates separate from noise.</text>
+
+    <!-- row 3 -->
+    <line class="row" x1="40" y1="308" x2="1200" y2="308"/>
+    <text x="40" y="336" class="t n">Failure mode</text>
+    <text x="40" y="356" class="f">how it breaks when the market changes</text>
+    <text x="356" y="336" class="m">Visibly. A gate stops passing and the</text>
+    <text x="356" y="354" class="m">board goes quiet - which is information.</text>
+    <text x="806" y="336" class="m">Quietly. Confidence stays high while the</text>
+    <text x="806" y="354" class="m">relationship it learned has already gone.</text>
+
+    <!-- row 4 -->
+    <line class="row" x1="40" y1="378" x2="1200" y2="378"/>
+    <text x="40" y="406" class="t n">Changing it</text>
+    <text x="40" y="426" class="f">turnaround from idea to validated change</text>
+    <text x="356" y="406" class="m">Edit a threshold, replay a recorded day,</text>
+    <text x="356" y="424" class="m">read the difference. Minutes.</text>
+    <text x="806" y="406" class="m">Retrain, re-validate, re-check for leakage</text>
+    <text x="806" y="424" class="m">and drift. Days, done properly.</text>
+
+    <!-- row 5 -->
+    <line class="row" x1="40" y1="448" x2="1200" y2="448"/>
+    <text x="40" y="476" class="t n">Cost of being wrong</text>
+    <text x="40" y="496" class="f">what a bad call actually costs</text>
+    <text x="356" y="476" class="m">Bounded by construction: budgets, small</text>
+    <text x="356" y="494" class="m">probes, hard stops, forced close.</text>
+    <text x="806" y="476" class="m">Bounded by the same rules - which have to</text>
+    <text x="806" y="494" class="m">exist anyway, underneath the model.</text>
+
+    <line class="row" x1="40" y1="518" x2="1200" y2="518"/>
+  </g>
+
+  <!-- resolution -->
+  <rect x="40" y="546" width="1160" height="130" rx="10" fill="#12151c" stroke="#232a36"/>
+  <rect x="40" y="546" width="5" height="130" rx="2.5" fill="url(#ah)"/>
+  <text x="64" y="574" class="xs" fill="#7fe6cd">HOW THIS SYSTEM RESOLVES IT</text>
+  <text x="64" y="602" class="t" font-size="15" font-weight="600">The hard part of the problem was never the classifier. It was the search.</text>
+  <text x="64" y="628" class="m s">Finding which few names, out of a universe of thousands of contracts, are being accumulated one-directionally right now is a search over live flow - and the rule</text>
+  <text x="64" y="646" class="m s">engine performs that search exhaustively, every minute, with a reason attached to every hit. A learned model would be asked to approximate the same ranking, from</text>
+  <text x="64" y="664" class="m s">far less data, and hand back a number instead of an explanation. So the search runs on rules; learning is queued to re-rank what the search already found.</text>
+</svg>

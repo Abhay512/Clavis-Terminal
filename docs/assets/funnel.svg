@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 700" width="1240" height="700" font-family="Inter,'Segoe UI',system-ui,sans-serif">
+  <defs>
+    <linearGradient id="f1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3d5a8a"/><stop offset="1" stop-color="#5a9dff"/></linearGradient>
+    <linearGradient id="f2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4c7fc4"/><stop offset="1" stop-color="#7fd4ff"/></linearGradient>
+    <linearGradient id="f3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2fa88c"/><stop offset="1" stop-color="#4af6c3"/></linearGradient>
+    <linearGradient id="f4" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d98426"/><stop offset="1" stop-color="#ffc46b"/></linearGradient>
+    <linearGradient id="hd" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6db3f2"/><stop offset="0.6" stop-color="#4af6c3"/><stop offset="1" stop-color="#ffa028"/></linearGradient>
+    <marker id="a2" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0.5 L8 4.5 L0 8.5 z" fill="#5b6675"/></marker>
+    <style>
+      .bg{fill:#0b0d10}
+      .t{fill:#e9ecf1}.m{fill:#98a2b1}.f{fill:#67717f}
+      .n{font-size:15px;font-weight:700}
+      .s{font-size:11.5px}
+      .xs{font-size:10px;letter-spacing:.8px}
+      .num{font-size:26px;font-weight:800}
+      .leg{fill:#141b18;stroke:#2f5a4c;stroke-width:1.2}
+      .rej{fill:#1c1315;stroke:#5c2b2f;stroke-width:1.2}
+      .arw{stroke:#5b6675;stroke-width:1.6;fill:none;marker-end:url(#a2)}
+    </style>
+  </defs>
+  <rect class="bg" width="1240" height="700"/>
+
+  <text x="40" y="46" font-size="24" font-weight="800" fill="url(#hd)">The conviction funnel</text>
+  <text x="40" y="68" class="f s">the system does not predict which stock will run — it makes each candidate prove it, minute by minute</text>
+
+  <!-- STAGE BARS -->
+  <g>
+    <rect x="40" y="104" width="900" height="60" rx="6" fill="url(#f1)" opacity="0.92"/>
+    <text x="60" y="130" class="xs" fill="#0b0d10" opacity="0.75">STAGE 01 · UNIVERSE</text>
+    <text x="60" y="152" fill="#0b0d10" font-size="15" font-weight="700">Every F&amp;O contract, streamed live</text>
+    <text x="960" y="132" class="num" fill="#7fb0ff">~8,800</text>
+    <text x="960" y="152" class="f xs">contracts · ~160 underlyings</text>
+  </g>
+
+  <path class="arw" d="M100 164 L100 186"/>
+
+  <g>
+    <rect x="40" y="190" width="740" height="60" rx="6" fill="url(#f2)" opacity="0.92"/>
+    <text x="60" y="216" class="xs" fill="#0b0d10" opacity="0.75">STAGE 02 · FLOW DECOMPOSITION</text>
+    <text x="60" y="238" fill="#0b0d10" font-size="15" font-weight="700">Committed money, split four ways, per stock, per minute</text>
+    <text x="800" y="218" class="num" fill="#8fd9ff">160</text>
+    <text x="800" y="238" class="f xs">stocks ranked in rupee notional</text>
+  </g>
+
+  <path class="arw" d="M100 250 L100 272"/>
+
+  <!-- gates -->
+  <g>
+    <rect x="40" y="276" width="580" height="88" rx="6" fill="#141821" stroke="#2b3444"/>
+    <text x="60" y="300" class="xs" fill="#7fc4ff">STAGE 03 · ENTRY GATES — all must pass, for several consecutive minutes</text>
+    <g class="s" fill="#c6cedb">
+      <text x="62" y="326">unusual build</text><text x="182" y="326">flow dominance</text><text x="320" y="326">flow cleanliness</text>
+      <text x="62" y="348">two-sidedness</text><text x="182" y="348">realized retrace</text><text x="320" y="348">distance from extreme</text>
+      <text x="470" y="326">time window</text><text x="470" y="348">regime budget</text>
+    </g>
+    <rect x="636" y="276" width="304" height="88" rx="6" class="rej"/>
+    <text x="656" y="300" class="xs" fill="#ff8f89">REJECTED</text>
+    <text x="656" y="326" class="s" fill="#a58b8e">chop, two-sided books, stocks already</text>
+    <text x="656" y="346" class="s" fill="#a58b8e">extended, and everything off-window</text>
+  </g>
+
+  <path class="arw" d="M100 364 L100 388"/>
+
+  <g>
+    <rect x="40" y="392" width="470" height="66" rx="6" fill="url(#f3)" opacity="0.92"/>
+    <text x="60" y="418" class="xs" fill="#08201a" opacity="0.8">STAGE 04 · PROBE</text>
+    <text x="60" y="442" fill="#08201a" font-size="15" font-weight="700">Opened small. Cheap to be wrong.</text>
+    <text x="530" y="420" class="num" fill="#6cf0cd">~20</text>
+    <text x="530" y="440" class="f xs">probes on a normal day · losses capped tight</text>
+  </g>
+
+  <path class="arw" d="M100 458 L100 482"/>
+
+  <!-- four legs -->
+  <text x="40" y="500" class="xs" fill="#4af6c3">STAGE 05 · PROMOTION LEGS — a probe is promoted only when all four hold at the same minute</text>
+
+  <g>
+    <rect class="leg" x="40" y="512" width="216" height="86" rx="8"/>
+    <text x="58" y="536" class="num" fill="#2f6d5c" font-size="20">01</text>
+    <text x="96" y="537" class="t n">Survived</text>
+    <text x="58" y="562" class="s" fill="#9db8ae">held past the minimum</text>
+    <text x="58" y="580" class="s" fill="#9db8ae">without hitting its stop</text>
+
+    <rect class="leg" x="272" y="512" width="216" height="86" rx="8"/>
+    <text x="290" y="536" class="num" fill="#2f6d5c" font-size="20">02</text>
+    <text x="328" y="537" class="t n">Extended</text>
+    <text x="290" y="562" class="s" fill="#9db8ae">printed a fresh session</text>
+    <text x="290" y="580" class="s" fill="#9db8ae">extreme after entry</text>
+
+    <rect class="leg" x="504" y="512" width="216" height="86" rx="8"/>
+    <text x="522" y="536" class="num" fill="#2f6d5c" font-size="20">03</text>
+    <text x="560" y="537" class="t n">Aligned</text>
+    <text x="522" y="562" class="s" fill="#9db8ae">cumulative flow still</text>
+    <text x="522" y="580" class="s" fill="#9db8ae">backing the same side</text>
+
+    <rect class="leg" x="736" y="512" width="216" height="86" rx="8"/>
+    <text x="754" y="536" class="num" fill="#2f6d5c" font-size="20">04</text>
+    <text x="792" y="537" class="t n">In profit</text>
+    <text x="754" y="562" class="s" fill="#9db8ae">ride P&amp;L past the</text>
+    <text x="754" y="580" class="s" fill="#9db8ae">promotion floor</text>
+
+    <path class="arw" d="M968 555 L1000 555"/>
+  </g>
+
+  <g>
+    <rect x="1008" y="512" width="192" height="86" rx="8" fill="url(#f4)"/>
+    <text x="1026" y="538" class="xs" fill="#2b1a06">STAGE 06</text>
+    <text x="1026" y="562" fill="#2b1a06" font-size="17" font-weight="800">TOP BOARD</text>
+    <text x="1026" y="582" fill="#2b1a06" font-size="10.5" opacity="0.85">held to the close</text>
+  </g>
+
+  <!-- footer band -->
+  <rect x="40" y="622" width="1160" height="48" rx="6" fill="#141821" stroke="#2b3444"/>
+  <circle cx="64" cy="646" r="4" fill="#4af6c3"/>
+  <text x="80" y="651" class="s" fill="#c6cedb">Confirmation, not prediction — every promotion is a fact the market already printed, never a forecast the model made.</text>
+</svg>
