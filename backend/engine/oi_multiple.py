@@ -1,4 +1,10 @@
-"""OI build-up multiple board: today's OI versus the prior EOD snapshot."""
+"""OI build-up multiple board: today's OI versus the prior EOD snapshot.
+
+Reference implementation. The production board's baseline selection, near-spot
+weighting, writer read and counter-tape flag are not published; this version
+tracks the plain running multiple of each near-spot contract against its own
+session base.
+"""
 from __future__ import annotations
 
 import csv
@@ -8,17 +14,17 @@ from dataclasses import dataclass
 from datetime import date, datetime
 
 import config
+from engine import classifier, oi_engine
 from engine.market_state import InstrumentState, MarketState
 
 log = logging.getLogger("oimult")
 
 
 def load_prev_eod_oi(today: date | None = None) -> dict[tuple, tuple]:
-    """Most recent prior-session EOD OI snapshot, keyed by (underlying, kind, strike)."""
+    """Most recent prior-session EOD OI snapshot, keyed by contract."""
     today = today or date.today()
-    snaps = sorted(config.META_DIR.glob("*_eod_oi.csv"))
     best = None
-    for p in snaps:
+    for p in sorted(config.META_DIR.glob("*_eod_oi.csv")):
         try:
             d = date.fromisoformat(p.name[:10])
         except ValueError:
@@ -48,37 +54,37 @@ def load_prev_eod_oi(today: date | None = None) -> dict[tuple, tuple]:
 class OIMultipleRow:
     ts: datetime
     underlying: str
-    running_max: float        # highest near-spot multiple reached today
-    contract: str             # the strike that set it, e.g. "530PE"
-    base_oi: int              # that strike's open baseline
-    peak_oi: int              # that strike's peak OI while near spot
-    t_max: datetime           # when the max printed
-    first_2x: datetime | None # first minute any near-spot strike hit 2x
-    strikes_2x: int           # near-spot strikes that reached >= 2x today
-    direction: str            # BUY | SELL | MIXED (premium overlay)
-    dominance: float          # max(bull,bear)/(bull+bear), 0.5=mixed 1=clean
-    bull_cr: float            # Rs-cr-weighted bullish build
+    running_max: float        # highest OI multiple seen today
+    contract: str             # the contract holding that multiple
+    base_oi: int
+    peak_oi: int
+    t_max: datetime           # minute the running max was set
+    first_2x: datetime | None  # first minute any contract passed the checkpoint
+    strikes_2x: int           # contracts past the checkpoint
+    direction: str            # BUY | SELL | MIXED
+    dominance: float
+    bull_cr: float
     bear_cr: float
-    top_writer: bool          # top contract's premium FELL base->peak
-    #                           (writers, not buyers - changes the reading)
-    fresh: str                # biggest near-zero-base build, "540CE +4050k"
+    top_writer: bool          # the top contract's premium fell as OI grew
+    fresh: str                # biggest build off a near-zero base
     fut_price: float
     price_pct_day: float
     monitored_min: int
-    counter_tape: bool = False  # direction fades a broadly one-way tape.
+    counter_tape: bool = False
 
 
 class _Tok:
-    """Per-option running state (baseline + near-spot peaks)."""
-    __slots__ = ("base", "base_px", "strike", "kind", "max_mult",
-                 "peak_oi", "peak_px", "eligible")
+    """Per-option running state: session base plus near-spot peaks."""
+
+    __slots__ = ("base", "base_px", "strike", "kind", "max_mult", "peak_oi",
+                 "peak_px", "eligible")
 
     def __init__(self, state: InstrumentState,
                  prev: tuple[int, float] | None = None):
         bars = state.bars
+        first = bars[0] if bars else None
         self.strike = state.inst.strike
         self.kind = state.inst.kind
-        first = bars[0] if bars else None
         self.eligible = bool(
             first is not None
             and first.minute.time() <= config.OIM_BASE_CUTOFF)
@@ -88,13 +94,13 @@ class _Tok:
             self.base, self.base_px = prev
             self.eligible = True
         self.max_mult = 0.0
-        self.peak_oi = 0        # max OI seen while near spot
-        self.peak_px = 0.0      # option premium at that peak minute
+        self.peak_oi = 0
+        self.peak_px = 0.0
 
 
 class _Stock:
     __slots__ = ("running_max", "top_contract", "top_tok", "t_max",
-                 "first_2x", "toks", "qualified", "hit2")
+                 "first_2x", "toks", "hit2")
 
     def __init__(self):
         self.running_max = 0.0
@@ -103,8 +109,7 @@ class _Stock:
         self.t_max: datetime | None = None
         self.first_2x: datetime | None = None
         self.toks: dict[int, _Tok] = {}
-        self.qualified: set[int] = set()   # tokens feeding the direction read
-        self.hit2: set[int] = set()        # tokens that reached >= 2x
+        self.hit2: set[int] = set()
 
 
 class OIMultipleBoard:
@@ -126,44 +131,25 @@ class OIMultipleBoard:
         self._stocks: dict[str, _Stock] = {}
 
     def compute(self, ts: datetime) -> list[OIMultipleRow]:
-        rows = self.full_board(ts)
-        out: list[OIMultipleRow] = []
+        """The displayed board, capped per direction."""
         counts = {"BUY": 0, "SELL": 0, "MIXED": 0}
         caps = {"BUY": config.OIM_TOP_N, "SELL": config.OIM_TOP_N,
                 "MIXED": config.OIM_MIXED_N}
-        for r in rows:
+        out: list[OIMultipleRow] = []
+        for r in self.full_board(ts):
             if counts[r.direction] < caps[r.direction]:
                 counts[r.direction] += 1
                 out.append(r)
         return out
 
     def full_board(self, ts: datetime) -> list[OIMultipleRow]:
-        """Every stock past the 2x checkpoint, untruncated, sorted by
-        running max - the eval/research view of the board."""
-        rows: list[OIMultipleRow] = []
+        """Every stock past the checkpoint, sorted by running max."""
+        rows = []
         for ul, chain in self._chains.items():
             row = self._scan(ul, chain, ts)
             if row is not None:
                 rows.append(row)
         rows.sort(key=lambda r: r.running_max, reverse=True)
-
-        up = dn = 0
-        for fut in self.market.futures_by_underlying.values():
-            if fut.last_price <= 0:
-                continue
-            d = fut.day_pct()
-            if d > 0.25:
-                up += 1
-            elif d < -0.25:
-                dn += 1
-        lopsided = (max(up, dn) >= config.OIM_TAPE_MIN
-                    and max(up, dn) >= config.OIM_TAPE_RATIO
-                    * max(1, min(up, dn)))
-        if lopsided:
-            majority = "BUY" if up >= dn else "SELL"
-            for r in rows:
-                if r.direction in ("BUY", "SELL") and r.direction != majority:
-                    r.counter_tape = True
         return rows
 
     # ------------------------------------------------------------ per stock
@@ -173,86 +159,85 @@ class OIMultipleBoard:
         if fut is None or fut.last_price <= 0 or step <= 0:
             return None
         spot = fut.last_price
-        stk = self._stocks.setdefault(ul, _Stock())
         span = config.OIM_NEAR_STEPS * step
+        stk = self._stocks.setdefault(ul, _Stock())
+        to_cr = spot / 1e7
+
+        bull = bear = 0.0
+        fresh = (0, "")
 
         for strike, kinds in chain.items():
             if abs(strike - spot) > span:
                 continue
             for kind, state in kinds.items():
-                if state.last_oi <= 0 or not state.bars:
+                if not state.bars:
                     continue
-                token = state.inst.token
-                tok = stk.toks.get(token)
+                tok = stk.toks.get(state.inst.token)
                 if tok is None:
                     prev = self._prev_eod.get(
-                        (ul, kind, float(strike), str(state.inst.expiry)))
-                    tok = stk.toks[token] = _Tok(state, prev)
-                if not tok.eligible:
+                        (ul, kind, strike, state.inst.expiry.isoformat()))
+                    tok = _Tok(state, prev)
+                    stk.toks[state.inst.token] = tok
+                if not tok.eligible or tok.base < config.OIM_MIN_BASE:
                     continue
-                oi_now = state.last_oi
-                px_now = state.last_price
+
+                oi_now = int(state.bars[-1].oi)
+                mult = oi_now / tok.base
                 if oi_now > tok.peak_oi:
                     tok.peak_oi = oi_now
-                    tok.peak_px = px_now
-                if tok.base >= config.OIM_MIN_BASE:
-                    mult = oi_now / tok.base
-                    if mult > tok.max_mult:
-                        tok.max_mult = mult
-                    if mult >= config.OIM_CHECKPOINT:
-                        stk.hit2.add(token)
-                        if stk.first_2x is None:
-                            stk.first_2x = ts
-                        stk.qualified.add(token)
-                    if mult > stk.running_max:
-                        stk.running_max = mult
-                        stk.top_contract = f"{strike:g}{kind}"
-                        stk.top_tok = tok
-                        stk.t_max = ts
-                elif tok.peak_oi >= config.OIM_FRESH_MIN:
-                    stk.qualified.add(token)     # fresh-strike build
+                    tok.peak_px = float(state.bars[-1].close)
+                if mult > tok.max_mult:
+                    tok.max_mult = mult
 
-        if stk.running_max < config.OIM_CHECKPOINT:
+                added = oi_now - tok.base
+                if added >= config.OIM_FRESH_MIN and added > fresh[0]:
+                    fresh = (added, f"{strike:g}{kind} +{added // 1000}k")
+
+                if mult >= config.OIM_CHECKPOINT:
+                    stk.hit2.add(state.inst.token)
+                    if stk.first_2x is None:
+                        stk.first_2x = ts
+                if mult > stk.running_max:
+                    stk.running_max = mult
+                    stk.top_contract = f"{strike:g}{kind}"
+                    stk.top_tok = tok
+                    stk.t_max = ts
+
+                m = oi_engine.compute(state, config.RADAR_WINDOW,
+                                      intrabar=False)
+                if m is None or m.oi_delta <= 0:
+                    continue
+                side = classifier.option_side(
+                    classifier.classify(m.oi_delta, m.price_pct))
+                if side is None:
+                    continue
+                cr = m.oi_delta * to_cr
+                if ((kind == "CE" and side == classifier.BUY_SIDE)
+                        or (kind == "PE" and side == classifier.SELL_SIDE)):
+                    bull += cr
+                else:
+                    bear += cr
+
+        if stk.running_max < config.OIM_CHECKPOINT or stk.top_tok is None:
             return None
 
-        bull = bear = 0.0
-        best_fresh = (0, "")                     # (added, label)
-        for token in stk.qualified:
-            tok = stk.toks[token]
-            added = tok.peak_oi - tok.base
-            if added <= 0 or tok.base_px <= 0 or tok.peak_px <= 0:
-                continue
-            buying = tok.peak_px > tok.base_px
-            w = added * tok.peak_px / 1e7
-            if (tok.kind == "CE") == buying:     # CE-buy / PE-write
-                bull += w
-            else:                                # PE-buy / CE-write
-                bear += w
-            if tok.base < config.OIM_MIN_BASE and added > best_fresh[0]:
-                best_fresh = (added,
-                              f"{tok.strike:g}{tok.kind} +{added // 1000}k")
-        tot = bull + bear
-        if tot > 0:
-            dom = max(bull, bear) / tot
-            direction = ("BUY" if bull >= bear else "SELL") \
-                if dom >= config.OIM_MIN_DOM else "MIXED"
+        total = bull + bear
+        dom = abs(bull - bear) / total if total > 0 else 0.0
+        if dom < config.OIM_MIN_DOM:
+            direction = "MIXED"
         else:
-            dom, direction = 0.0, "MIXED"
+            direction = "BUY" if bull > bear else "SELL"
 
-        top = stk.top_tok
-        top_writer = bool(top and top.peak_px < top.base_px)
+        tok = stk.top_tok
         return OIMultipleRow(
-            ts=ts, underlying=ul,
-            running_max=round(stk.running_max, 1),
-            contract=stk.top_contract,
-            base_oi=top.base if top else 0,
-            peak_oi=top.peak_oi if top else 0,
+            ts=ts, underlying=ul, running_max=round(stk.running_max, 1),
+            contract=stk.top_contract, base_oi=tok.base, peak_oi=tok.peak_oi,
             t_max=stk.t_max or ts, first_2x=stk.first_2x,
-            strikes_2x=len(stk.hit2),
-            direction=direction, dominance=round(dom, 2),
-            bull_cr=round(bull, 1), bear_cr=round(bear, 1),
-            top_writer=top_writer,
-            fresh=best_fresh[1],
-            fut_price=spot, price_pct_day=round(fut.day_pct(), 2),
+            strikes_2x=len(stk.hit2), direction=direction,
+            dominance=round(dom, 2), bull_cr=round(bull, 1),
+            bear_cr=round(bear, 1),
+            top_writer=bool(tok.base_px > 0 and tok.peak_px < tok.base_px),
+            fresh=fresh[1], fut_price=spot,
+            price_pct_day=round(fut.day_pct(), 2),
             monitored_min=fut.bars_seen,
         )
