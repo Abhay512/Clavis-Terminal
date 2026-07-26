@@ -1,0 +1,41 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    image: clavis-terminal-backend
+    container_name: clavis-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      # the daily access token is written back into .env by auth.py
+      - ./backend/.env:/app/.env
+      # recordings, SQLite and session metadata survive rebuilds
+      - clavis-data:/app/data
+      # edit the watchlist without rebuilding the image
+      - ./backend/stocks.txt:/app/stocks.txt:ro
+    environment:
+      - TZ=Asia/Kolkata
+      - OI_LOG_LEVEL=INFO
+    stdin_open: true
+    tty: true
+    command: ["python", "main.py", "--api"]
+
+  dashboard:
+    build:
+      context: ./dashboard
+      args:
+        # baked into the client bundle - must be reachable from the BROWSER,
+        # which is why this is localhost and not the service name
+        NEXT_PUBLIC_API_WS: ${NEXT_PUBLIC_API_WS:-ws://localhost:8000/ws/live}
+        NEXT_PUBLIC_DEMO: ${NEXT_PUBLIC_DEMO:-false}
+    image: clavis-terminal-dashboard
+    container_name: clavis-dashboard
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  clavis-data:
