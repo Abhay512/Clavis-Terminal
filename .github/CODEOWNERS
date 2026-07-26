@@ -1,0 +1,15 @@
+# Review is automatically requested from these owners on every pull request.
+# Later rules win, so the specific entries below override the catch-all.
+
+*                       @Abhay512
+
+# The decision engines and their thresholds are the withheld core - changes
+# here need a closer look than the rest of the tree.
+/backend/engine/        @Abhay512
+/backend/config.py      @Abhay512
+
+# Anything that touches credentials, CI or the published contract.
+/backend/auth.py        @Abhay512
+/.github/               @Abhay512
+/SECURITY.md            @Abhay512
+/README.md              @Abhay512
