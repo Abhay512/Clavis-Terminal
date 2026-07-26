@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // lean container image: bundles only what the server actually needs
+  output: "standalone",
   async headers() {
     return [
       {
