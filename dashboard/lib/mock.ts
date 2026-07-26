@@ -113,7 +113,7 @@ export function makeMockSignal(partial?: Partial<Signal>): Signal {
     token: 1000 + _signalId,
     tradingsymbol: `${u}26JUL${1400 + _signalId * 50}${kind}`,
     underlying: u, kind, strike: 1400 + _signalId * 50,
-    expiry: "2026-07-31", oi_now: 500_000 + oi_delta,
+    expiry: "2030-01-31", oi_now: 500_000 + oi_delta,
     oi_delta, oi_pct, zscore: +(3 + Math.random() * 5).toFixed(1),
     price: +(20 + Math.random() * 80).toFixed(2),
     price_pct: side === "BUY_SIDE" ? +Math.abs(Math.random() * 2).toFixed(2) : -(Math.random() * 2).toFixed(2) as unknown as number,
