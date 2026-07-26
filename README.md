@@ -75,6 +75,7 @@ of names being accumulated in one direction right now — while the session is s
 
 **The rest**
 [Roadmap](#roadmap) ·
+[Contributing](#contributing) ·
 [Note on the published source](#note-on-the-published-source) ·
 [Disclaimer](#disclaimer)
 
@@ -432,8 +433,13 @@ Eight surfaces, each answering one question, all recomputed every minute and all
 ```
 clavis-terminal/
 ├── docker-compose.yml           engine + API + terminal, one command
+├── .github/
+│   ├── workflows/ci.yml         lint, tests, both builds, image builds, secret scan
+│   ├── ISSUE_TEMPLATE/          bug report + feature request forms
+│   └── PULL_REQUEST_TEMPLATE.md
 ├── backend/
 │   ├── Dockerfile               python:3.11-slim, data and .env bind-mounted
+│   ├── pyproject.toml           ruff + pytest configuration
 │   ├── main.py                  orchestrator: auth → universe → feed → loop → EOD
 │   ├── api.py                   FastAPI REST + WebSocket bridge
 │   ├── auth.py                  daily Kite login, token written to .env
@@ -1089,6 +1095,77 @@ reason instant detection across the entire chain is possible without a cluster b
 Learned components are welcome inside that boundary and are planned as an advisory layer above
 the rule gates — the archive of per-minute metrics already exists to train them. What is not
 welcome is a signal whose reasoning cannot be read off the board at the moment it fires.
+
+---
+
+## Contributing
+
+<div align="center">
+
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-4af6c3?style=for-the-badge)](CONTRIBUTING.md)
+[![Good first issues](https://img.shields.io/github/issues/Abhay512/Clavis-Terminal/good%20first%20issue?style=for-the-badge&color=6db3f2&label=good%20first%20issues)](https://github.com/Abhay512/Clavis-Terminal/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+[![Help wanted](https://img.shields.io/github/issues/Abhay512/Clavis-Terminal/help%20wanted?style=for-the-badge&color=ffa028&label=help%20wanted)](https://github.com/Abhay512/Clavis-Terminal/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
+[![CI](https://github.com/Abhay512/Clavis-Terminal/actions/workflows/ci.yml/badge.svg)](https://github.com/Abhay512/Clavis-Terminal/actions/workflows/ci.yml)
+
+</div>
+
+**Contributions are genuinely welcome, and you do not need to know anything about options
+trading to make a good one.** Most of this repository is ordinary high-quality systems work —
+concurrency, storage, resilience, APIs, interface engineering — and most of it can be developed
+**without a broker subscription at all**: the engine runs against synthetic input in tests, and
+the dashboard renders the entire interface from fixtures in demo mode.
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### 🟢 Very welcome
+
+- **Infrastructure & resilience** — reconnect logic, backfill correctness, crash safety, timezone handling
+- **Storage & performance** — Parquet layout, SQLite indexes, memory footprint, profiling the hot path
+- **Broker adapters** — abstract `feed/` so other brokers or a simulated feed can drive the same engine
+- **Dashboard & UX** — accessibility, responsive layout, keyboard nav, new visualisations
+- **Testing** — property tests for the flow decomposition, fixtures, a synthetic feed harness
+- **Tooling & docs** — CI, type hints, Docker, setup on other platforms, anything unclear
+
+</td>
+<td width="50%" valign="top">
+
+### 🔴 Cannot be merged
+
+- **Tuning the reference thresholds** — the published numbers are deliberately neutral, and the data they would be fitted on is not in this repository
+- **Restoring the withheld production logic** — the gap is intentional, not a TODO
+- **Strategy changes backed only by a backtest nobody else can reproduce**
+- **Anything that places orders** — this system is deliberately read-only
+
+Unsure which side an idea falls on? **Open an issue and ask before you build.** Always faster than finding out in review.
+
+</td>
+</tr>
+</table>
+
+### Get set up in three commands
+
+```bash
+git clone https://github.com/<your-fork>/Clavis-Terminal.git
+cd Clavis-Terminal/backend && pip install -r requirements.txt && pip install ruff
+python -m tests.test_oneway          # 9 checks, no market, no API key
+```
+
+Then run what CI runs before opening a PR:
+
+```bash
+cd backend    && ruff check . && python -m compileall -q . && python -m tests.test_oneway
+cd ../dashboard && npx tsc --noEmit && npm run build
+```
+
+CI runs the same checks across Python 3.11/3.12 and Node 18/20, builds both container images, and
+**fails the build if a `.env` file or a credential-shaped string ever appears in the tree.**
+
+📖 **[CONTRIBUTING.md](CONTRIBUTING.md)** — full guide, code style, and the stricter review
+standard that applies to anything changing what appears on a board
+🛡️ **[SECURITY.md](SECURITY.md)** — report privately, never in a public issue
+🤝 **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)**
 
 ---
 
