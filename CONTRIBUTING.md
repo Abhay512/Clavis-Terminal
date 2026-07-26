@@ -54,6 +54,28 @@ build.** That is always faster than finding out in review.
 You do **not** need a broker subscription to develop against most of this repository. The engine
 runs against synthetic input in tests, and the dashboard runs entirely on generated fixtures.
 
+### Using Developer Scripts (Makefile / dev.cmd)
+
+To simplify common tasks, you can use the provided `Makefile` (macOS/Linux) or `dev.cmd` (Windows) from the root directory.
+
+#### macOS/Linux (Makefile)
+```bash
+make install       # Installs both backend and dashboard dependencies
+make lint          # Runs ruff check on the backend
+make test          # Runs backend tests
+make build         # Compiles backend and builds dashboard
+make dev-dashboard # Starts the dashboard development server
+```
+
+#### Windows (dev.cmd)
+```cmd
+dev.cmd install       # Installs both backend and dashboard dependencies
+dev.cmd lint          # Runs ruff check on the backend
+dev.cmd test          # Runs backend tests
+dev.cmd build         # Compiles backend and builds dashboard
+dev.cmd dev-dashboard # Starts the dashboard development server
+```
+
 ### Backend
 
 ```bash

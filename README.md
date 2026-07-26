@@ -618,6 +618,28 @@ This is the only step that happens outside the repository, and it is a one-time 
 > exchange requires an interactive login. `auth.py` reduces it to: open a URL, log in, paste one
 > string back. Roughly fifteen seconds, once a day.
 
+### Using Developer Scripts (Makefile / dev.cmd)
+
+To simplify common tasks, you can use the provided `Makefile` (macOS/Linux) or `dev.cmd` (Windows) from the root directory.
+
+#### macOS/Linux (Makefile)
+```bash
+make install       # Installs both backend and dashboard dependencies
+make lint          # Runs ruff check on the backend
+make test          # Runs backend tests
+make build         # Compiles backend and builds dashboard
+make dev-dashboard # Starts the dashboard development server
+```
+
+#### Windows (dev.cmd)
+```cmd
+dev.cmd install       # Installs both backend and dashboard dependencies
+dev.cmd lint          # Runs ruff check on the backend
+dev.cmd test          # Runs backend tests
+dev.cmd build         # Compiles backend and builds dashboard
+dev.cmd dev-dashboard # Starts the dashboard development server
+```
+
 ### Step 1 · Backend
 
 ```bash
