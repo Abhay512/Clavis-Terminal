@@ -1,0 +1,52 @@
+# ---- secrets --------------------------------------------------------------
+.env
+.env.local
+.env.production
+*.pem
+*.key
+
+# ---- recorded market data + runtime state ---------------------------------
+backend/data/*
+!backend/data/.gitkeep
+*.parquet
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.db
+
+# ---- python ---------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---- node / next ----------------------------------------------------------
+node_modules/
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+.npm/
+.pnpm-store/
+
+# ---- logs -----------------------------------------------------------------
+*.log
+logs/
+
+# ---- research scratch (never published) -----------------------------------
+scratchpad/
+graphify-out/
+notebooks/
+
+# ---- editors / os ---------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini

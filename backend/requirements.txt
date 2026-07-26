@@ -1,0 +1,7 @@
+# Runtime: Python 3.11+
+kiteconnect>=4.2.0
+pyarrow>=13.0.0
+pandas>=2.0.0
+fastapi>=0.100.0
+uvicorn>=0.23.0
+websockets>=11.0
