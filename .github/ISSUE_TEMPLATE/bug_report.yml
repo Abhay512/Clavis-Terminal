@@ -1,0 +1,89 @@
+name: Bug report
+description: Something behaves incorrectly
+labels: ["bug", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing this.
+
+        ⚠️ **Never paste an API key, API secret or access token.** If you post one by accident,
+        regenerate it at [developers.kite.trade](https://developers.kite.trade/) straight away.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part?
+      options:
+        - Backend - ingestion / feed
+        - Backend - engine / boards
+        - Backend - storage / replay
+        - Backend - API
+        - Dashboard
+        - Docker / deployment
+        - Documentation
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: >
+        The first ~20 lines of the engine boot log are the most useful thing you can give us -
+        they show universe size, token state and feed health. Browser console output helps for
+        dashboard issues. Redact anything sensitive.
+      render: shell
+
+  - type: input
+    id: version
+    attributes:
+      label: Commit or version
+      placeholder: "git rev-parse --short HEAD"
+
+  - type: dropdown
+    id: how
+    attributes:
+      label: How are you running it?
+      options:
+        - Native (venv + npm)
+        - Docker Compose
+        - Demo mode only
+    validations:
+      required: true
+
+  - type: input
+    id: env
+    attributes:
+      label: OS, Python and Node versions
+      placeholder: "Windows 11 · Python 3.11.9 · Node 20.11"
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues
+          required: true
+        - label: There are no credentials anywhere in this report
+          required: true

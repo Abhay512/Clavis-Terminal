@@ -1,0 +1,59 @@
+name: Feature or improvement
+description: Propose something new, or a better way to do something
+labels: ["enhancement", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before writing this up, it is worth skimming
+        [CONTRIBUTING.md](../blob/main/CONTRIBUTING.md#read-this-first-what-this-repository-is-and-is-not) —
+        it says plainly which kinds of change can and cannot be merged, which saves everyone time.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part?
+      options:
+        - Infrastructure / resilience
+        - Storage / performance
+        - Broker adapter
+        - Dashboard / UX
+        - Testing
+        - Tooling / CI / Docker
+        - Documentation
+        - A new analytics board
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What is hard, missing, slow or wrong today? Describe the problem, not the solution.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you have in mind
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+      description: Including doing nothing - sometimes that is the right answer.
+
+  - type: dropdown
+    id: help
+    attributes:
+      label: Would you like to build it?
+      options:
+        - "Yes - I would like to work on this"
+        - "Maybe, with some guidance"
+        - "No, just suggesting"
+    validations:
+      required: true
