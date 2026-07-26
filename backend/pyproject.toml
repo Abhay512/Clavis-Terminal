@@ -1,0 +1,39 @@
+[project]
+name = "clavis-terminal-backend"
+version = "1.0.0"
+description = "Real-time open-interest intelligence engine for the Indian F&O market"
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = ["data", ".venv", "__pycache__"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "W",    # pycodestyle warnings
+    "I",    # import sorting
+    "UP",   # pyupgrade
+    "B",    # bugbear
+    "C4",   # comprehensions
+    "SIM",  # simplify
+    "RET",  # return consistency
+]
+ignore = [
+    "B008",    # function call in default argument - used deliberately for config paths
+    "SIM108",  # ternary is not always clearer than if/else
+    "RET504",  # a named result before return is often the readable choice
+    "RET505",  # else-after-return reads fine in the gate chains
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["config", "engine", "feed", "sinks", "universe"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E402"]   # sys.path bootstrap must precede engine imports
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
