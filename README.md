@@ -40,6 +40,7 @@ while the session is still running.
 - [Scale and performance](#scale-and-performance)
 - [What is not in this repository](#what-is-not-in-this-repository)
 - [Roadmap](#roadmap)
+- [Note on the published source](#note-on-the-published-source)
 - [Disclaimer](#disclaimer)
 
 ---
@@ -667,6 +668,36 @@ API and the entire dashboard - is complete and runnable.
   to a specific broker. An adapter interface behind `feed/` would let the same
   engine run on a different data source, or against a simulated feed for
   continuous integration.
+
+---
+
+## Note on the published source
+
+> **The core decision logic of this system is intentionally not published here.**
+
+This repository is the architecture, the infrastructure and the analytics
+platform - not the strategy. To state it plainly, so nobody has to guess:
+
+- **The production entry, exit and promotion engine is withheld.** Every
+  decision engine in `engine/` ships as a **reference implementation**: same
+  public interface, same output shape, fully runnable, deliberately simpler.
+  The rules that actually decide what gets bought and when are not in this code.
+- **The calibrated thresholds are withheld.** Every parameter name is present so
+  the design reads correctly, but the numbers are neutral reference defaults.
+  They are not the values fitted on real recorded sessions.
+- **The recorded market data is withheld.** No session recordings, no
+  baselines, no research notebooks, no trade logs, no backtest output.
+- **No credentials of any kind appear anywhere in this repository**, in any
+  commit, at any point in its history.
+
+What *is* complete and genuinely runnable: live ingestion across the full option
+chain, universe construction under the broker's connection limits, bar building,
+the four-way OI flow decomposition, spike detection, ranking, persistence and
+migrations, offline replay, the REST and WebSocket API, and the entire terminal
+interface. Clone it, add your own API key and your own rules, and it runs.
+
+The withheld parts were built and validated over live trading sessions. They
+stay private. Everything published here is offered as-is under the MIT licence.
 
 ---
 
