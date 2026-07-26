@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 470" width="1240" height="470" font-family="Inter,'Segoe UI',system-ui,sans-serif">
+  <defs>
+    <linearGradient id="ph" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffa028"/><stop offset="1" stop-color="#6db3f2"/></linearGradient>
+    <linearGradient id="rail" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff8a3d"/><stop offset="0.28" stop-color="#5a9dff"/>
+      <stop offset="0.6" stop-color="#2fe0b0"/><stop offset="1" stop-color="#a97bf6"/>
+    </linearGradient>
+    <style>
+      .bg{fill:#0b0d10}
+      .t{fill:#e9ecf1}.f{fill:#67717f}
+      .card{fill:#141821;stroke:#2b3444;stroke-width:1}
+      .n{font-size:14px;font-weight:700}
+      .s{font-size:11px}
+      .xs{font-size:9.5px;letter-spacing:1.4px}
+    </style>
+  </defs>
+  <rect class="bg" width="1240" height="470"/>
+
+  <text x="40" y="46" font-size="24" font-weight="800" fill="url(#ph)">One minute of the engine</text>
+  <text x="40" y="68" class="f s">two detection paths run side by side: an instant path on every OI tick, and a full sweep at every minute close</text>
+
+  <!-- fast path -->
+  <rect x="40" y="96" width="1160" height="108" rx="10" fill="#17120e" stroke="#4a3520"/>
+  <rect x="40" y="96" width="5" height="108" rx="2.5" fill="#ff8a3d"/>
+  <text x="64" y="122" class="xs" fill="#ffb45e">INSTANT PATH — microseconds after an OI tick lands</text>
+
+  <g>
+    <rect class="card" x="64" y="134" width="200" height="54" rx="8"/>
+    <text x="80" y="156" class="t n">tick arrives</text><text x="80" y="175" class="f s">OI value changed</text>
+    <path d="M272 161 L292 161" stroke="#6b5334" stroke-width="1.6" marker-end="url(#tri1)"/>
+
+    <rect class="card" x="300" y="134" width="200" height="54" rx="8"/>
+    <text x="316" y="156" class="t n">O(1) z-score</text><text x="316" y="175" class="f s">cached mean · cached σ</text>
+    <path d="M508 161 L528 161" stroke="#6b5334" stroke-width="1.6" marker-end="url(#tri1)"/>
+
+    <rect class="card" x="536" y="134" width="200" height="54" rx="8"/>
+    <text x="552" y="156" class="t n">gate check</text><text x="552" y="175" class="f s">OI % · base · volume</text>
+    <path d="M744 161 L764 161" stroke="#6b5334" stroke-width="1.6" marker-end="url(#tri1)"/>
+
+    <rect class="card" x="772" y="134" width="200" height="54" rx="8"/>
+    <text x="788" y="156" class="t n">publish spike</text><text x="788" y="175" class="f s">bus → store → screen</text>
+
+    <rect x="1000" y="134" width="176" height="54" rx="8" fill="#1c1508" stroke="#5c4520"/>
+    <text x="1016" y="156" class="n" fill="#ffb45e">no batching</text>
+    <text x="1016" y="175" class="s" fill="#8a7550">nothing waits for :00</text>
+  </g>
+
+  <!-- minute path -->
+  <rect x="40" y="220" width="1160" height="188" rx="10" fill="#0e1218" stroke="#243043"/>
+  <rect x="40" y="220" width="5" height="188" rx="2.5" fill="url(#rail)"/>
+  <text x="64" y="246" class="xs" fill="#7fc4ff">MINUTE-CLOSE SWEEP — the full universe, in order, every 60 seconds</text>
+
+  <line x1="88" y1="300" x2="1152" y2="300" stroke="url(#rail)" stroke-width="3" stroke-linecap="round"/>
+
+  <g>
+    <circle cx="120" cy="300" r="9" fill="#ff8a3d" stroke="#0b0d10" stroke-width="3"/>
+    <text x="96" y="284" class="t n">close bars</text>
+    <text x="96" y="330" class="f s">carry silent</text><text x="96" y="345" class="f s">contracts forward</text>
+
+    <circle cx="316" cy="300" r="9" fill="#e0913c" stroke="#0b0d10" stroke-width="3"/>
+    <text x="292" y="284" class="t n">flow split</text>
+    <text x="292" y="330" class="f s">buy · write · cover</text><text x="292" y="345" class="f s">· unwind, roll-netted</text>
+
+    <circle cx="512" cy="300" r="9" fill="#5a9dff" stroke="#0b0d10" stroke-width="3"/>
+    <text x="488" y="284" class="t n">rank stocks</text>
+    <text x="488" y="330" class="f s">rupee notional,</text><text x="488" y="345" class="f s">both sides</text>
+
+    <circle cx="708" cy="300" r="9" fill="#2fe0b0" stroke="#0b0d10" stroke-width="3"/>
+    <text x="684" y="284" class="t n">read regime</text>
+    <text x="684" y="330" class="f s">TREND / MIXED / CHOP</text><text x="684" y="345" class="f s">sets budget + stop</text>
+
+    <circle cx="904" cy="300" r="9" fill="#4af6c3" stroke="#0b0d10" stroke-width="3"/>
+    <text x="880" y="284" class="t n">run funnel</text>
+    <text x="880" y="330" class="f s">enter · manage · promote</text><text x="880" y="345" class="f s">· exit</text>
+
+    <circle cx="1100" cy="300" r="9" fill="#a97bf6" stroke="#0b0d10" stroke-width="3"/>
+    <text x="1058" y="284" class="t n">fan out</text>
+    <text x="1040" y="330" class="f s">Parquet · SQLite</text><text x="1040" y="345" class="f s">· WebSocket</text>
+  </g>
+
+  <text x="88" y="384" class="f s">Every arrow above is pure computation over in-memory state. The same sequence, driven from recorded bars instead of a live socket, is what <tspan fill="#98a2b1">replay.py</tspan> runs.</text>
+
+  <rect x="40" y="424" width="1160" height="30" rx="6" fill="#141821" stroke="#2b3444"/>
+  <circle cx="62" cy="439" r="4" fill="#ffa028"/>
+  <text x="78" y="443" class="s" fill="#c6cedb">Honest limit: the exchange publishes open interest with a 1–3 minute lag. That is the floor for any OI screener — everything downstream of the tick is already instant.</text>
+
+  <defs><marker id="tri1" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0.5 L7 4 L0 7.5 z" fill="#6b5334"/></marker></defs>
+</svg>

@@ -1,0 +1,182 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 820" width="1240" height="820" font-family="Inter,'Segoe UI',system-ui,sans-serif">
+  <defs>
+    <linearGradient id="gSrc" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff8a3d"/><stop offset="1" stop-color="#ffc46b"/>
+    </linearGradient>
+    <linearGradient id="gIng" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#5a9dff"/><stop offset="1" stop-color="#7fd4ff"/>
+    </linearGradient>
+    <linearGradient id="gEng" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2fe0b0"/><stop offset="1" stop-color="#7af0d4"/>
+    </linearGradient>
+    <linearGradient id="gOut" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#a97bf6"/><stop offset="1" stop-color="#d2b0ff"/>
+    </linearGradient>
+    <linearGradient id="gTitle" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffa028"/><stop offset="0.5" stop-color="#4af6c3"/><stop offset="1" stop-color="#6db3f2"/>
+    </linearGradient>
+    <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0 0.5 L8 4.5 L0 8.5 z" fill="#6b7684"/>
+    </marker>
+    <style>
+      .bg{fill:#0b0d10}
+      .band{fill:#12151c;stroke:#232a36;stroke-width:1;rx:10}
+      .node{fill:#171c26;stroke:#2b3444;stroke-width:1}
+      .t{fill:#e9ecf1}
+      .m{fill:#98a2b1}
+      .f{fill:#67717f}
+      .h{font-size:12px;font-weight:700;letter-spacing:2.2px}
+      .n{font-size:14px;font-weight:600}
+      .s{font-size:11px}
+      .xs{font-size:10px;letter-spacing:.6px}
+      .flow{stroke:#3c4757;stroke-width:1.6;fill:none;marker-end:url(#ar)}
+    </style>
+  </defs>
+
+  <rect class="bg" width="1240" height="820"/>
+
+  <text x="40" y="46" font-size="24" font-weight="800" fill="url(#gTitle)">Clavis Terminal — system architecture</text>
+  <text x="40" y="68" class="f s">one process · three broker sockets · ~8,800 contracts · every board recomputed each minute</text>
+
+  <!-- ============ BAND 1: MARKET DATA ============ -->
+  <rect class="band" x="40" y="92" width="1160" height="112" rx="10"/>
+  <rect x="40" y="92" width="5" height="112" rx="2.5" fill="url(#gSrc)"/>
+  <text x="64" y="118" class="h" fill="#ffb45e">MARKET DATA</text>
+  <text x="196" y="118" class="f xs">NSE derivatives via broker API</text>
+
+  <rect class="node" x="64" y="130" width="252" height="56" rx="8"/>
+  <circle cx="88" cy="158" r="5" fill="#ff8a3d"/>
+  <text x="104" y="153" class="t n">WebSocket feed</text>
+  <text x="104" y="171" class="f xs">full-mode ticks · LTP · volume · OI</text>
+
+  <rect class="node" x="336" y="130" width="252" height="56" rx="8"/>
+  <circle cx="360" cy="158" r="5" fill="#ff8a3d"/>
+  <text x="376" y="153" class="t n">Instrument dump</text>
+  <text x="376" y="171" class="f xs">daily contract master · expiries</text>
+
+  <rect class="node" x="608" y="130" width="252" height="56" rx="8"/>
+  <circle cx="632" cy="158" r="5" fill="#ff8a3d"/>
+  <text x="648" y="153" class="t n">Historical REST</text>
+  <text x="648" y="171" class="f xs">minute bars · gap repair only</text>
+
+  <rect class="node" x="880" y="130" width="296" height="56" rx="8"/>
+  <circle cx="904" cy="158" r="5" fill="#ff8a3d"/>
+  <text x="920" y="153" class="t n">Session snapshots</text>
+  <text x="920" y="171" class="f xs">prior close · exchange open · prior EOD OI</text>
+
+  <path class="flow" d="M620 204 L620 232"/>
+
+  <!-- ============ BAND 2: INGESTION ============ -->
+  <rect class="band" x="40" y="236" width="1160" height="112" rx="10"/>
+  <rect x="40" y="236" width="5" height="112" rx="2.5" fill="url(#gIng)"/>
+  <text x="64" y="262" class="h" fill="#7fc4ff">INGESTION</text>
+  <text x="176" y="262" class="f xs">callback threads → one owning consumer thread</text>
+
+  <rect class="node" x="64" y="274" width="252" height="56" rx="8"/>
+  <text x="80" y="297" class="t n">ticker_manager</text>
+  <text x="80" y="315" class="f xs">3-socket pool · reconnect · watchdog</text>
+
+  <rect class="node" x="336" y="274" width="252" height="56" rx="8"/>
+  <text x="352" y="297" class="t n">tick_queue</text>
+  <text x="352" y="315" class="f xs">thread-safe batch handoff</text>
+
+  <rect class="node" x="608" y="274" width="252" height="56" rx="8"/>
+  <text x="624" y="297" class="t n">universe</text>
+  <text x="624" y="315" class="f xs">chain build · 3×3,000 capacity guard</text>
+
+  <rect class="node" x="880" y="274" width="296" height="56" rx="8"/>
+  <text x="896" y="297" class="t n">backfill</text>
+  <text x="896" y="315" class="f xs">refetch outage minutes · flag artifacts</text>
+
+  <path class="flow" d="M620 348 L620 376"/>
+
+  <!-- ============ BAND 3: ENGINE ============ -->
+  <rect class="band" x="40" y="380" width="1160" height="266" rx="10"/>
+  <rect x="40" y="380" width="5" height="266" rx="2.5" fill="url(#gEng)"/>
+  <text x="64" y="406" class="h" fill="#5fe9c4">ENGINE</text>
+  <text x="140" y="406" class="f xs">deterministic · single-threaded · fully replayable</text>
+
+  <!-- row A: state -->
+  <rect class="node" x="64" y="418" width="340" height="66" rx="8"/>
+  <rect x="64" y="418" width="4" height="66" rx="2" fill="#2fe0b0"/>
+  <text x="84" y="442" class="t n">market_state · bar_builder</text>
+  <text x="84" y="460" class="f xs">per-instrument live state, session extremes,</text>
+  <text x="84" y="474" class="f xs">VWAP, one-minute OHLCV + OI bars</text>
+
+  <rect class="node" x="420" y="418" width="340" height="66" rx="8"/>
+  <rect x="420" y="418" width="4" height="66" rx="2" fill="#2fe0b0"/>
+  <text x="440" y="442" class="t n">oi_engine · classifier</text>
+  <text x="440" y="460" class="f xs">rolling OI deltas, cached z-scores,</text>
+  <text x="440" y="474" class="f xs">OI × price → four-way flow decomposition</text>
+
+  <rect class="node" x="776" y="418" width="400" height="66" rx="8"/>
+  <rect x="776" y="418" width="4" height="66" rx="2" fill="#2fe0b0"/>
+  <text x="796" y="442" class="t n">ranking · spike_detector · filters</text>
+  <text x="796" y="460" class="f xs">rupee-notional flow per stock, roll-aware netting,</text>
+  <text x="796" y="474" class="f xs">intrabar + minute-close spikes, protection gates</text>
+
+  <!-- row B: decision -->
+  <rect class="node" x="64" y="500" width="248" height="128" rx="8" fill="#141b18" stroke="#2f5a4c"/>
+  <rect x="64" y="500" width="4" height="128" rx="2" fill="#4af6c3"/>
+  <text x="84" y="524" class="xs" fill="#4af6c3">DECISION LAYER</text>
+  <text x="84" y="548" class="t n">regime</text>
+  <text x="84" y="566" class="f xs">TREND · MIXED · CHOP</text>
+  <text x="84" y="592" class="t n">oneway_momentum</text>
+  <text x="84" y="610" class="f xs">probes → conviction funnel</text>
+
+  <rect class="node" x="328" y="500" width="200" height="128" rx="8"/>
+  <text x="344" y="524" class="xs" fill="#7fc4ff">POSITIONING</text>
+  <text x="344" y="548" class="t n">big_player_radar</text>
+  <text x="344" y="566" class="f xs">near-spot build pace</text>
+  <text x="344" y="592" class="t n">position_radar</text>
+  <text x="344" y="610" class="f xs">loaded / building / moving</text>
+
+  <rect class="node" x="544" y="500" width="200" height="128" rx="8"/>
+  <text x="560" y="524" class="xs" fill="#ffb45e">MAGNITUDE</text>
+  <text x="560" y="548" class="t n">oi_multiple</text>
+  <text x="560" y="566" class="f xs">today vs prior close OI</text>
+  <text x="560" y="592" class="t n">ranking board</text>
+  <text x="560" y="610" class="f xs">buy-side vs write-side</text>
+
+  <rect class="node" x="760" y="500" width="200" height="128" rx="8"/>
+  <text x="776" y="524" class="xs" fill="#c9a4ff">ROTATION</text>
+  <text x="776" y="548" class="t n">sector_leaders</text>
+  <text x="776" y="566" class="f xs">strong sector → its leader</text>
+  <text x="776" y="592" class="t n">rs_leaders</text>
+  <text x="776" y="610" class="f xs">strength vs the basket</text>
+
+  <rect class="node" x="976" y="500" width="200" height="128" rx="8"/>
+  <text x="992" y="524" class="xs" fill="#ff8f89">RISK</text>
+  <text x="992" y="548" class="t n">budgets</text>
+  <text x="992" y="566" class="f xs">per side · per day · per regime</text>
+  <text x="992" y="592" class="t n">stops &amp; exits</text>
+  <text x="992" y="610" class="f xs">hard · structural · trail · bell</text>
+
+  <path class="flow" d="M620 646 L620 674"/>
+
+  <!-- ============ BAND 4: DELIVERY ============ -->
+  <rect class="band" x="40" y="678" width="1160" height="112" rx="10"/>
+  <rect x="40" y="678" width="5" height="112" rx="2.5" fill="url(#gOut)"/>
+  <text x="64" y="704" class="h" fill="#c9a4ff">DELIVERY</text>
+  <text x="152" y="704" class="f xs">the engine publishes; every consumer is just a subscriber</text>
+
+  <rect class="node" x="64" y="716" width="252" height="56" rx="8"/>
+  <text x="80" y="739" class="t n">signal_bus</text>
+  <text x="80" y="757" class="f xs">pub/sub · zero engine coupling</text>
+
+  <rect class="node" x="336" y="716" width="252" height="56" rx="8"/>
+  <text x="352" y="739" class="t n">storage</text>
+  <text x="352" y="757" class="f xs">Parquet bars · SQLite boards</text>
+
+  <rect class="node" x="608" y="716" width="252" height="56" rx="8"/>
+  <text x="624" y="739" class="t n">FastAPI</text>
+  <text x="624" y="757" class="f xs">8 REST routes · WebSocket fan-out</text>
+
+  <rect class="node" x="880" y="716" width="296" height="56" rx="8"/>
+  <text x="896" y="739" class="t n">Next.js terminal</text>
+  <text x="896" y="757" class="f xs">live boards · promotion &amp; exit-risk meters</text>
+
+  <!-- side rail -->
+  <path d="M1196 148 L1216 148 L1216 744 L1196 744" stroke="#2b3444" stroke-width="1.4" fill="none"/>
+  <text x="1226" y="470" class="f xs" transform="rotate(90 1226 470)" text-anchor="middle">REPLAY: the same objects, driven from recorded bars</text>
+</svg>
