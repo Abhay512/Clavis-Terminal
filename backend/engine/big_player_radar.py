@@ -1,4 +1,9 @@
-"""Near-spot strike scanner: OI build pace around the current price."""
+"""Near-spot strike scanner: OI build pace around the current price.
+
+Reference implementation. The production scanner's strike weighting, pace
+normalisation and strength curve are not published; this version measures the
+same quantity in the most direct way and feeds the same downstream consumers.
+"""
 from __future__ import annotations
 
 import logging
@@ -6,7 +11,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 import config
-from engine import classifier, filters, oi_engine
+from engine import classifier, oi_engine
 from engine.market_state import InstrumentState, MarketState
 
 log = logging.getLogger("radar")
@@ -22,8 +27,8 @@ class BigPlayerSignal:
     net_cr: float             # signed near-spot net flow (Rs cr)
     fut_price: float
     price_pct_day: float
-    ce_strike: str            # strongest bullish CE contribution "1200CE +45k"
-    pe_strike: str            # strongest bullish/bearish PE contribution
+    ce_strike: str            # largest bullish contribution
+    pe_strike: str            # largest bearish contribution
     n_strikes: int            # near-spot strikes that showed a build
     first_seen: datetime      # when this stock first appeared this direction
     monitored_min: int
@@ -33,15 +38,14 @@ class BigPlayerSignal:
 class BigPlayerRadar:
     def __init__(self, market: MarketState):
         self.market = market
-        # underlying -> sorted strike -> {kind: state}
         self._chains: dict[str, dict[float, dict[str, InstrumentState]]] = {}
         for ul, states in market.options_by_underlying.items():
             chain: dict[float, dict[str, InstrumentState]] = {}
             for s in states:
                 chain.setdefault(s.inst.strike, {})[s.inst.kind] = s
             self._chains[ul] = chain
-        self._first: dict[str, tuple[str, datetime]] = {}   # ul -> (dir, ts)
-        #                    - the One-Way loader flag's raw input
+        self._first: dict[str, tuple[str, datetime]] = {}
+        # consumed by the one-way board and the cross-day baselines
         self.near_flows: dict[str, tuple[float, float]] = {}
         self.near_minute_hist: dict[str, list[float]] = {}
 
@@ -54,7 +58,7 @@ class BigPlayerRadar:
         out.sort(key=lambda s: s.strength, reverse=True)
         top = out[:config.RADAR_TOP_N]
         live = {s.underlying for s in top}
-        for ul in list(self._first):        # forget stocks that dropped off
+        for ul in list(self._first):
             if ul not in live:
                 del self._first[ul]
         return top
@@ -65,42 +69,41 @@ class BigPlayerRadar:
             return None
         spot = fut.last_price
         strikes = sorted(chain, key=lambda k: abs(k - spot))
-        near = strikes[:2 * config.RADAR_ATM_STRIKES]   # +/-N nearest
+        near = strikes[:2 * config.RADAR_ATM_STRIKES]
         to_cr = spot / 1e7
+
         bull = bear = 0.0
         n = 0
-        top_ce = (0.0, "")    # (bullish cr, label)
-        top_pe = (0.0, "")
+        best_bull = (0.0, "")
+        best_bear = (0.0, "")
+
         for strike in near:
             for kind, state in chain[strike].items():
-                m = oi_engine.compute(state, config.RADAR_WINDOW, intrabar=False)
+                m = oi_engine.compute(state, config.RADAR_WINDOW,
+                                      intrabar=False)
                 if m is None or m.oi_delta <= 0:
                     continue
-                cls = classifier.classify(m.oi_delta, m.price_pct)
-                side = classifier.option_side(cls)
+                side = classifier.option_side(
+                    classifier.classify(m.oi_delta, m.price_pct))
                 if side is None:
                     continue
                 cr = m.oi_delta * to_cr
-                bullish = ((kind == "CE" and side == classifier.BUY_SIDE) or
-                           (kind == "PE" and side == classifier.SELL_SIDE))
                 n += 1
                 label = f"{strike:g}{kind} +{m.oi_delta // 1000}k"
+                bullish = ((kind == "CE" and side == classifier.BUY_SIDE)
+                           or (kind == "PE" and side == classifier.SELL_SIDE))
                 if bullish:
                     bull += cr
-                    if kind == "CE" and cr > top_ce[0]:
-                        top_ce = (cr, label)
-                    elif kind == "PE" and cr > top_pe[0]:
-                        top_pe = (cr, label)
+                    if cr > best_bull[0]:
+                        best_bull = (cr, label)
                 else:
                     bear += cr
-                    if kind == "CE" and cr > top_pe[0]:
-                        top_pe = (cr, label)   # bearish CE write
-                    elif kind == "PE" and cr > top_ce[0]:
-                        top_ce = (cr, label)   # bearish PE buy
+                    if cr > best_bear[0]:
+                        best_bear = (cr, label)
 
-        w = float(config.RADAR_WINDOW)
-        self.near_flows[ul] = (bull / w, bear / w)
-        self.near_minute_hist.setdefault(ul, []).append((bull + bear) / w)
+        window = float(config.RADAR_WINDOW)
+        self.near_flows[ul] = (bull / window, bear / window)
+        self.near_minute_hist.setdefault(ul, []).append((bull + bear) / window)
 
         total = bull + bear
         net = bull - bear
@@ -109,18 +112,19 @@ class BigPlayerRadar:
         near_dom = abs(net) / total
         if near_dom < config.RADAR_MIN_DOM:
             return None
+
         direction = "BUY" if net > 0 else "SELL"
-        strength = min(100.0, (abs(net) / 5.0) * 20.0 * near_dom)  # cr-scaled
+        strength = min(100.0, abs(net) * near_dom * 4.0)
 
         prev = self._first.get(ul)
         if prev is None or prev[0] != direction:
             self._first[ul] = (direction, ts)
-        first_seen = self._first[ul][1]
+
         return BigPlayerSignal(
             ts=ts, underlying=ul, direction=direction,
             strength=round(strength, 1), near_dom=round(near_dom, 2),
             net_cr=round(net, 1), fut_price=spot,
             price_pct_day=round(fut.day_pct(), 2),
-            ce_strike=top_ce[1], pe_strike=top_pe[1], n_strikes=n,
-            first_seen=first_seen, monitored_min=fut.bars_seen,
+            ce_strike=best_bull[1], pe_strike=best_bear[1], n_strikes=n,
+            first_seen=self._first[ul][1], monitored_min=fut.bars_seen,
         )
