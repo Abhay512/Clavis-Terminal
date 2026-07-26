@@ -40,8 +40,9 @@ logs/
 
 # ---- research scratch (never published) -----------------------------------
 scratchpad/
-graphify-out/
 notebooks/
+analysis/
+*.ipynb
 
 # ---- editors / os ---------------------------------------------------------
 .vscode/
