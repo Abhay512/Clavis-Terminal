@@ -287,6 +287,26 @@ class SignalStore:
                 rank_in_sector INTEGER, fut_price REAL, breakout_ts TEXT,
                 locked INTEGER DEFAULT 0
             )""")
+        # ------------------------------------------------------------ INDEXES --
+        # Add indexes on lookups used by post-session audits and dashboard queries
+        self._conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_feed_gaps_day ON feed_gaps (day);"
+        )
+        self._conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_signals_ts ON signals (ts);"
+        )
+        self._conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_rankings_ts ON rankings (ts);"
+        )
+        self._conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_position_builds_ts ON position_builds (ts);"
+        )
+        self._conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_oneway_movers_ts ON oneway_movers (ts);"
+        )
+        self._conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_oi_multiple_board_ts ON oi_multiple_board (ts);"
+        )
         self._migrate_rankings()
         self._migrate_early()
         self._migrate_2026_07_07()
